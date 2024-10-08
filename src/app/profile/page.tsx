@@ -20,7 +20,7 @@ const ProfilePage = () => {
               </span>
             </div>
             <div>
-              <span className="font-semibold">Tên đăng nhập:</span>{" "}
+              <span className="font-semibold">Tên đăng nhập là:</span>{" "}
               <span className="bg-gray-300 rounded-md px-4 py-1">username</span>
             </div>
           </div>
