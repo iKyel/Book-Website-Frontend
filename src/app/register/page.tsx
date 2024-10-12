@@ -31,13 +31,16 @@ const Register: React.FC = () => {
       });
     }
 
-    if (name === 'confirmPassword') {
+    if (name === 'confirmPassword' || name === 'password') {
       setErrors({
         ...errors,
         confirmPassword: value === form.password ? '' : 'Nhập lại mật khẩu không khớp',
       });
     }
   };
+
+  //Check Errors
+  const hasErrors = Object.values(errors).some((error) => error !== '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +113,8 @@ const Register: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded mt-4"
+          className={`w-full bg-blue-500 text-white p-2 rounded mt-4 ${hasErrors ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={hasErrors}
         >
           Đăng kí
         </button>
