@@ -1,23 +1,44 @@
-'use client'; // Đảm bảo rằng component này được xử lý như là Client Component
+'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import từ next/navigation
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/contexts/AppContext';
+import Modal from '@/components/molecules/Modal';
 
 const LoginPage = () => {
   const router = useRouter();
+  const userStore = useUser();
   const [tenDangNhap, setTenDangNhap] = useState('');
   const [matKhau, setMatKhau] = useState('');
 
-  const xuLyDangNhap = (e: React.FormEvent) => {
+  const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Xử lý logic đăng nhập tại đây
+    const result: any = await userStore.loginUser(tenDangNhap, matKhau);
+
+    if (result) {
+      setModalMessage(result.message);
+      setIsModalOpen(true);
+    }
   };
+
+  const handleModal = () => {
+    setIsModalOpen(false);
+    if (modalMessage === "Đăng nhập thành công") {
+      router.push("/profile");
+    }
+    setMatKhau('');
+  }
+
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-1/3">
         <h2 className="text-2xl font-semibold text-center mb-6">Đăng nhập</h2>
-        <form onSubmit={xuLyDangNhap}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="tenDangNhap" className="block text-sm font-medium text-gray-700">
               Tên đăng nhập
@@ -51,6 +72,7 @@ const LoginPage = () => {
             Đăng nhập
           </button>
         </form>
+
         <div className="mt-4 text-center">
           <span className="text-sm text-gray-600">hoặc</span>
           <button
@@ -61,6 +83,12 @@ const LoginPage = () => {
           </button>
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        modalMessage={modalMessage}
+        onClose={handleModal}
+      />
     </div>
   );
 };

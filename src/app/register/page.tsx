@@ -1,19 +1,29 @@
 'use client';
 
+import Modal from '@/components/molecules/Modal';
+import { useUser } from '@/contexts/AppContext';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const Register: React.FC = () => {
+  const router = useRouter();
+  const userStore = useUser();
+
   const [form, setForm] = useState({
     fullName: '',
-    username: '',
+    userName: '',
     password: '',
     confirmPassword: '',
   });
 
   const [errors, setErrors] = useState({
-    username: '',
+    fullName: '',
+    userName: '',
     confirmPassword: '',
   });
+
+  const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,18 +33,30 @@ const Register: React.FC = () => {
     });
 
     // Validation
-    if (name === 'username') {
+    if (name === 'fullName') {
+      const usernameRegex = /^[a-zA-Z0-9À-ỹ ]*$/;
+      setErrors({
+        ...errors,
+        fullName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
+          ? ''
+          : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự',
+      });
+    }
+
+    if (name === 'userName') {
       const usernameRegex = /^[a-z0-9]*$/;
       setErrors({
         ...errors,
-        username: usernameRegex.test(value) ? '' : 'Chỉ có thể dùng chữ thường hoặc số',
+        userName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
+          ? ''
+          : 'Chỉ có thể dùng chữ thường hoặc số và trong khoảng 4 đến 50 kí tự',
       });
     }
 
     if (name === 'confirmPassword' || name === 'password') {
       setErrors({
         ...errors,
-        confirmPassword: value === form.password ? '' : 'Nhập lại mật khẩu không khớp',
+        confirmPassword: value === form.password ? '' : 'Nhập lại mật khẩu không khớp'
       });
     }
   };
@@ -42,11 +64,29 @@ const Register: React.FC = () => {
   //Check Errors
   const hasErrors = Object.values(errors).some((error) => error !== '');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form data:', form);
+
+    const result: any = await userStore.signupUser(form.fullName, form.userName, form.password);
+
+    setModalMessage(result.message);
+    setIsModalOpen(true);
+
   };
+
+  const handleModal = () => {
+    setIsModalOpen(false);
+
+    if (modalMessage === 'Đăng ký thành công') {
+      router.push('/login');
+    }
+    else if (modalMessage === 'Đã tồn tại người dùng có username này. Hãy dùng username khác!') {
+      setErrors({
+        ...errors,
+        userName: modalMessage
+      });
+    }
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -67,19 +107,22 @@ const Register: React.FC = () => {
             required
           />
         </div>
+        {errors.fullName && (
+          <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+        )}
 
         <div className="mb-4">
           <label className="block text-gray-700">Tên đăng nhập</label>
           <input
             type="text"
-            name="username"
-            value={form.username}
+            name="userName"
+            value={form.userName}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded mt-1"
             required
           />
-          {errors.username && (
-            <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+          {errors.userName && (
+            <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
           )}
         </div>
 
@@ -114,11 +157,15 @@ const Register: React.FC = () => {
         <button
           type="submit"
           className={`w-full bg-blue-500 text-white p-2 rounded mt-4 ${hasErrors ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={hasErrors}
         >
           Đăng kí
         </button>
       </form>
+      <Modal
+        isOpen={isModalOpen}
+        modalMessage={modalMessage}
+        onClose={handleModal}
+      />
     </div>
   );
 };

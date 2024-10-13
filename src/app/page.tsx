@@ -1,9 +1,9 @@
 import React from 'react';
-import Container from '../components/Container';
-import Sidebar from '../components/Sidebar';
+import Container from '../components/organisms/Container';
 
 const HomePage = () => {
   return (
+
     <Container>
       <div className="flex">
         Home
