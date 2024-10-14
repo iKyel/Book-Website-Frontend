@@ -4,7 +4,7 @@ import Link from 'next/link'
 const Sidebar = () => {
   return (
     <aside className="w-1/4 bg-gray-200 p-4">
-      <h2 className="text-lg font-bold mb-6">TRANG TÀI KHOẢN</h2>
+      <h2 className="text-lg font-bold">TRANG TÀI KHOẢN</h2>
       <p className="mb-4">Xin chào, <span className="font-semibold">Người dùng</span></p>
       <ul className="space-y-4">
         <li>
