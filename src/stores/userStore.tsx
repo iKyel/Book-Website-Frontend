@@ -36,23 +36,23 @@ class UserStore {
                 if (response.data.message === "Đăng nhập thành công") {
                     const cookies = parseCookies();
                     const token = cookies.token;
-                    // if (token) {
-                    //     try {
-                    //         // Giải mã token để lấy thông tin người dùng
-                    //         const user: IUser = jwtDecode(token);
+                    if (token) {
+                        try {
+                            // Giải mã token để lấy thông tin người dùng
+                            const user: IUser = jwtDecode(token);
 
 
-                    //         runInAction(() => {
-                    //             this.user = user;
-                    //         })
-                    //     } catch (error) {
-                    //         console.error('Lỗi xảy ra khi giải mã token:', error);
-                    //     }
-                    // }
-                    const user: IUser = { userName: 'hoang', fullName: 'Hoang' };
-                    runInAction(() => {
-                        this.user = user;
-                    })
+                            runInAction(() => {
+                                this.user = user;
+                            })
+                        } catch (error) {
+                            console.error('Lỗi xảy ra khi giải mã token:', error);
+                        }
+                    }
+                    // const user: IUser = { userName: 'hoang', fullName: 'Hoang' };
+                    // runInAction(() => {
+                    //     this.user = user;
+                    // })
                 }
 
                 const result = response.data;
