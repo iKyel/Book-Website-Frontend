@@ -1,86 +1,173 @@
 'use client';
 
-import { useState } from 'react';
+import Modal from '@/components/molecules/Modal';
+import { useUser } from '@/contexts/AppContext';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 
-const Register = () => {
-  const [hoTen, setHoTen] = useState('');
-  const [tenDangNhap, setTenDangNhap] = useState('');
-  const [matKhau, setMatKhau] = useState('');
-  const [nhapLaiMatKhau, setNhapLaiMatKhau] = useState('');
+const Register: React.FC = () => {
+  const router = useRouter();
+  const userStore = useUser();
 
-  const xuLyDangKy = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Xử lý logic đăng ký tại đây
+  const [form, setForm] = useState({
+    fullName: '',
+    userName: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const [errors, setErrors] = useState({
+    fullName: '',
+    userName: '',
+    confirmPassword: '',
+  });
+
+  const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value,
+    });
+
+    // Validation
+    if (name === 'fullName') {
+      const usernameRegex = /^[a-zA-Z0-9À-ỹ ]*$/;
+      setErrors({
+        ...errors,
+        fullName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
+          ? ''
+          : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự',
+      });
+    }
+
+    if (name === 'userName') {
+      const usernameRegex = /^[a-z0-9]*$/;
+      setErrors({
+        ...errors,
+        userName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
+          ? ''
+          : 'Chỉ có thể dùng chữ thường hoặc số và trong khoảng 4 đến 50 kí tự',
+      });
+    }
+
+    if (name === 'confirmPassword' || name === 'password') {
+      setErrors({
+        ...errors,
+        confirmPassword: value === form.password ? '' : 'Nhập lại mật khẩu không khớp'
+      });
+    }
   };
 
+  //Check Errors
+  const hasErrors = Object.values(errors).some((error) => error !== '');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result: any = await userStore.signupUser(form.fullName, form.userName, form.password);
+
+    setModalMessage(result.message);
+    setIsModalOpen(true);
+
+  };
+
+  const handleModal = () => {
+    setIsModalOpen(false);
+
+    if (modalMessage === 'Đăng ký thành công') {
+      router.push('/login');
+    }
+    else if (modalMessage === 'Đã tồn tại người dùng có username này. Hãy dùng username khác!') {
+      setErrors({
+        ...errors,
+        userName: modalMessage
+      });
+    }
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-1/3">
-        <h2 className="text-2xl font-semibold text-center mb-6">Tạo tài khoản</h2>
-        <form onSubmit={xuLyDangKy}>
-          <div className="mb-4">
-            <label htmlFor="hoTen" className="block text-sm font-medium text-gray-700">
-              Họ và tên
-            </label>
-            <input
-              type="text"
-              id="hoTen"
-              value={hoTen}
-              onChange={(e) => setHoTen(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="tenDangNhap" className="block text-sm font-medium text-gray-700">
-              Tên đăng nhập
-            </label>
-            <input
-              type="text"
-              id="tenDangNhap"
-              value={tenDangNhap}
-              onChange={(e) => setTenDangNhap(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="matKhau" className="block text-sm font-medium text-gray-700">
-              Mật khẩu
-            </label>
-            <input
-              type="password"
-              id="matKhau"
-              value={matKhau}
-              onChange={(e) => setMatKhau(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="nhapLaiMatKhau" className="block text-sm font-medium text-gray-700">
-              Nhập lại mật khẩu
-            </label>
-            <input
-              type="password"
-              id="nhapLaiMatKhau"
-              value={nhapLaiMatKhau}
-              onChange={(e) => setNhapLaiMatKhau(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-          >
-            Đăng ký
-          </button>
-        </form>
-      </div>
+    <div className="flex justify-center items-center h-screen">
+      <form
+        className="bg-white p-6 rounded-lg shadow-md w-1/3"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Tạo tài khoản</h2>
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Họ và tên</label>
+          <input
+            type="text"
+            name="fullName"
+            value={form.fullName}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+            required
+          />
+        </div>
+        {errors.fullName && (
+          <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+        )}
+
+        <div className="mb-4">
+          <label className="block text-gray-700">Tên đăng nhập</label>
+          <input
+            type="text"
+            name="userName"
+            value={form.userName}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+            required
+          />
+          {errors.userName && (
+            <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
+          )}
+        </div>
+
+        <div className="mb-4 relative">
+          <label className="block text-gray-700">Mật khẩu</label>
+          <input
+            type='password'
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+            required
+          />
+
+        </div>
+
+        <div className="mb-4 relative">
+          <label className="block text-gray-700">Nhập lại mật khẩu</label>
+          <input
+            type='password'
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded mt-1"
+            required
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className={`w-full bg-blue-500 text-white p-2 rounded mt-4 ${hasErrors ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          Đăng kí
+        </button>
+      </form>
+      <Modal
+        isOpen={isModalOpen}
+        modalMessage={modalMessage}
+        onClose={handleModal}
+      />
     </div>
   );
 };
 
 export default Register;
-
