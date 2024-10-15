@@ -25,16 +25,18 @@ const Navbar = () => {
       <div className="bg-white text-black py-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo Section */}
-          <div className="flex items-center">
-            <Image
-              src="./logo.svg" 
-              alt="Logo"
-              className="h-12 w-12 mr-2"
-              width={48}
-              height={48}
-            />
-            <span className="font-bold">CỬA HÀNG BÁN SÁCH TRỰC TUYẾN</span>
-          </div>
+          <Link href="/" className="hover:underline">
+            <div className="flex items-center">
+              <Image
+                src="./logo.svg"
+                alt="Logo"
+                className="h-12 w-12 mr-2"
+                width={48}
+                height={48}
+              />
+              <span className="font-bold">CỬA HÀNG BÁN SÁCH </span>
+            </div>
+          </Link>
 
           {/* Search Bar */}
           <div className="flex items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2">
@@ -86,13 +88,13 @@ const Navbar = () => {
       {/* Navigation Links */}
       <div className="bg-slate-100 text-black py-2 shadow-sm">
         <div className="container mx-auto flex justify-center space-x-8">
-          <Link href="/" className="hover:text-green-600 font-semibold">
+          <Link href="/" className="hover:text-orange-600 font-semibold">
             TRANG CHỦ
           </Link>
-          <Link href="/products" className="hover:text-green-600 font-semibold">
+          <Link href="/products" className="hover:text-orange-600 font-semibold">
             SẢN PHẨM
           </Link>
-          <Link href="/about" className="hover:text-green-600 font-semibold">
+          <Link href="/about" className="hover:text-orange-600 font-semibold">
             VỀ CHÚNG TÔI
           </Link>
         </div>
