@@ -34,12 +34,10 @@ const Register: React.FC = () => {
 
     // Validation
     if (name === 'fullName') {
-      const usernameRegex = /^[a-zA-Z0-9À-ỹ ]*$/;
+      const usernameRegex = /^[a-zA-Z0-9À-ỹ\s]{4,50}$/;
       setErrors({
         ...errors,
-        fullName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
-          ? ''
-          : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự',
+        fullName: usernameRegex.test(value) ? '' : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự',
       });
     }
 

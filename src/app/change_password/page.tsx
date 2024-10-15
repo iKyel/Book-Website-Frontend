@@ -4,6 +4,7 @@ import Sidebar from "@/components/organisms/Sidebar";
 import Container from "@/components/organisms/Container";
 import React, { useState } from "react";
 import { useUser } from "@/contexts/AppContext";
+import Modal from "@/components/molecules/Modal";
 
 const Change_Password = () => {
     const userStore = useUser();
@@ -17,6 +18,10 @@ const Change_Password = () => {
         confirmNewPassword: '',
     });
 
+    const [modalMessage, setModalMessage] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    //handleChange
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm({
@@ -33,14 +38,21 @@ const Change_Password = () => {
         }
     };
 
+    //handleModal
+    const handleModal = () => {
+        setIsModalOpen(false);
+    }
+
     //Check Errors
     const hasErrors = Object.values(errors).some((error) => error !== '');
 
+    //handleSubmit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = await userStore.changePassword(form.oldPassword, form.newPassword);
-
+        const result = await userStore.changePassword(userStore.user?.userName, form.newPassword);
+        setModalMessage(result.message);
+        setIsModalOpen(true);
 
     }
 
@@ -111,6 +123,11 @@ const Change_Password = () => {
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                modalMessage={modalMessage}
+                onClose={handleModal}
+            />
         </Container>
     );
 };
