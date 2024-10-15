@@ -15,7 +15,7 @@ const ProfilePage = observer(() => {
         <Sidebar />
 
         {/* Profile */}
-        <section className="w-3/4 p-8">
+        <section className="w-3/4 pt-4 pl-12">
           <h3 className="text-xl font-bold mb-4">THÔNG TIN TÀI KHOẢN</h3>
           <div className="space-y-4">
             <div>

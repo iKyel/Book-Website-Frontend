@@ -6,10 +6,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Đăng ký thành công' }, { status: 200 });
     }
     else if (userName === "hoang123") {
-        return NextResponse.json({ message: 'Đã tồn tại người dùng có username này. Hãy dùng username khác!' }, { status: 201 });
+        return NextResponse.json({ message: 'Đã tồn tại người dùng có username này. Hãy dùng username khác!' }, { status: 401 });
     }
     else {
-        return NextResponse.json({ message: 'Không cho đăng kí' }, { status: 202 });
+        return NextResponse.json({ message: 'Không cho đăng kí' }, { status: 500 });
     }
-
 }

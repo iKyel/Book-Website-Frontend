@@ -26,7 +26,7 @@ const LoginPage = () => {
 
   const handleModal = () => {
     setIsModalOpen(false);
-    if (modalMessage === "Đăng nhập thành công") {
+    if (modalMessage === "Đăng nhập thành công!") {
       router.push("/profile");
     }
     setMatKhau('');

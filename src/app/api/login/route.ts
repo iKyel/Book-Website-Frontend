@@ -6,7 +6,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Đăng nhập thành công' }, { status: 200 });
     }
     else {
-        return NextResponse.json({ message: 'Tài khoản hoặc mật khẩu không chính xác' }, { status: 201 });
+        return NextResponse.json({ message: 'Tài khoản hoặc mật khẩu không chính xác' }, { status: 401 });
     }
 
 }
