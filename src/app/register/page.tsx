@@ -61,32 +61,33 @@ const Register: React.FC = () => {
     }
   };
 
-  //Check Errors
-  const hasErrors = Object.values(errors).some((error) => error !== '');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const result: any = await userStore.signupUser(form.fullName, form.userName, form.password);
-
-    setModalMessage(result.message);
-    setIsModalOpen(true);
-
-  };
-
   const handleModal = () => {
     setIsModalOpen(false);
 
-    if (modalMessage === 'Đăng ký thành công') {
+    if (modalMessage === 'Đăng ký thành công!') {
       router.push('/login');
     }
-    else if (modalMessage === 'Đã tồn tại người dùng có username này. Hãy dùng username khác!') {
+    else if (modalMessage === 'Tên đăng nhập đã tồn tại. Hãy dùng tên khác!') {
       setErrors({
         ...errors,
         userName: modalMessage
       });
     }
   }
+  //Check Errors
+  const hasErrors = Object.values(errors).some((error) => error !== '');
+
+  //Handle Submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = await userStore.signupUser(form.fullName, form.userName, form.password);
+
+    setModalMessage(result.message);
+    setIsModalOpen(true);
+
+  };
+
 
   return (
     <div className="flex justify-center items-center h-screen">
