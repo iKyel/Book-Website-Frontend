@@ -67,9 +67,9 @@ class UserStore {
 
     }
 
-    async changePassword(userName: string = '', newPassword: string) {
+    async changePassword(userName: string = '', oldPassword: string, newPassword: string) {
         try {
-            const response = await api.post('/profile/', { userName, newPassword });
+            const response = await api.post('/profile/changePassword', { userName, oldPassword, newPassword });
             if (response) {
                 return response.data;
             }
