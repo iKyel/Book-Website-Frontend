@@ -14,7 +14,6 @@ const Sidebar = observer(() => {
 
   const handleModal = async () => {
     const result: any = await userStore.logout();
-    // const result = { message: "Đăng xuất thành công" };
     if (result) {
       router.push('/login');
     }
