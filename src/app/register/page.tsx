@@ -19,12 +19,16 @@ const Register: React.FC = () => {
   const [errors, setErrors] = useState({
     fullName: '',
     userName: '',
+    password: '',
     confirmPassword: '',
   });
 
+  //Modal
   const [modalMessage, setModalMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+
+  //handleChange
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({
@@ -33,34 +37,28 @@ const Register: React.FC = () => {
     });
 
     // Validation
+    const newErrors = { ...errors };
     if (name === 'fullName') {
-      const usernameRegex = /^[a-zA-Z0-9À-ỹ ]*$/;
-      setErrors({
-        ...errors,
-        fullName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
-          ? ''
-          : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự',
-      });
+      const usernameRegex = /^[a-zA-Z0-9À-ỹ\s]{4,50}$/;
+      newErrors.fullName = usernameRegex.test(value) ? '' : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 4 đến 50 kí tự';
     }
-
     if (name === 'userName') {
-      const usernameRegex = /^[a-z0-9]*$/;
-      setErrors({
-        ...errors,
-        userName: usernameRegex.test(value) && value.length >= 4 && value.length <= 50
-          ? ''
-          : 'Chỉ có thể dùng chữ thường hoặc số và trong khoảng 4 đến 50 kí tự',
-      });
-    }
+      const usernameRegex = /^[a-z0-9]{4,50}$/;
 
-    if (name === 'confirmPassword' || name === 'password') {
-      setErrors({
-        ...errors,
-        confirmPassword: value === form.password ? '' : 'Nhập lại mật khẩu không khớp'
-      });
+      newErrors.userName = usernameRegex.test(value) ? '' : 'Chỉ có thể dùng chữ thường hoặc số trong khoảng 4 đến 50 kí tự, không dùng chữ tiếng Việt';
     }
+    if (name === 'password') {
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      console.log(passwordRegex.test(value));
+      newErrors.password = passwordRegex.test(value) ? '' : 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ và số, không được dùng chữ tiếng việt';
+    }
+    if (name === 'confirmPassword' || name === 'password') {
+      newErrors.confirmPassword = value === form.password ? '' : 'Nhập lại mật khẩu không khớp';
+    }
+    setErrors(newErrors);
   };
 
+  //handleModal
   const handleModal = () => {
     setIsModalOpen(false);
 
@@ -137,7 +135,9 @@ const Register: React.FC = () => {
             className="w-full p-2 border border-gray-300 rounded mt-1"
             required
           />
-
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
         </div>
 
         <div className="mb-4 relative">
