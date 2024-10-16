@@ -1,4 +1,3 @@
-// stores/UserStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
 import axiosInstance from '@/utils/axiosInstance';
 import api from '@/utils/catchErrorToken';

@@ -2,7 +2,8 @@ import axios from 'axios';
 import { destroyCookie } from 'nookies';
 
 const api = axios.create({
-    baseURL: 'https://book-website-backend.vercel.app',
+    // baseURL: 'https://book-website-backend.vercel.app',
+    baseURL: 'http://localhost:3000',
     headers: {
         'Content-Type': 'application/json',
     },
