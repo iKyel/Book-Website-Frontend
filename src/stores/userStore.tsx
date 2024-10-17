@@ -1,4 +1,3 @@
-// stores/UserStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
 import axiosInstance from '@/utils/axiosInstance';
 import api from '@/utils/catchErrorToken';
@@ -67,14 +66,17 @@ class UserStore {
 
     }
 
-    async changePassword(oldPassword: string, newPassword: string) {
+    async changePassword(userName: string = '', oldPassword: string, newPassword: string) {
         try {
-            const response = await api.post('/profile/', { oldPassword, newPassword });
+            const response = await api.post('/profile/changePassword', { userName, oldPassword, newPassword });
             if (response) {
                 return response.data;
             }
         } catch (error) {
-            console.error('Có lỗi xảy ra khi thay đổi mật khẩu', error)
+            console.error('Có lỗi xảy ra khi thay đổi mật khẩu', error);
+            if (axios.isAxiosError(error)) {
+                return error.response?.data;
+            }
         }
     }
 }
