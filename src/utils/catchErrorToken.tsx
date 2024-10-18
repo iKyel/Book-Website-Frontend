@@ -3,6 +3,7 @@ import { destroyCookie } from 'nookies';
 
 const api = axios.create({
     baseURL: 'https://book-website-backend.vercel.app',
+    // baseURL: 'http://localhost:3000',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -19,6 +20,9 @@ api.interceptors.response.use(
         if (error.response && (error.response.status === 401 || error.response.status === 403) && currentUrl !== '/login') {
             destroyCookie(null, 'token'); // Xóa token nếu hết hạn hoặc không hợp lệ
             window.location.href = '/login'; // Điều hướng sang trang đăng nhập
+        }
+        if (error.response && (error.response.status === 500 || error.response.status === 404)) {
+            alert(error.response.data.message);
         }
         return Promise.reject(error);
     }
