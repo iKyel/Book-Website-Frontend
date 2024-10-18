@@ -1,4 +1,5 @@
 'use client';
+import Pagination from '@/components/molecules/Pagination';
 import ListBooks from '@/components/organisms/ListBooks';
 import { useBook, useCategory } from '@/contexts/AppContext';
 import { ICategory } from '@/stores/categoryStore';
@@ -7,19 +8,20 @@ import { useEffect, useState } from 'react';
 
 const ListPage = observer(() => {
   const bookStore = useBook();
-
+  const categoryStore = useCategory();
 
   const [categories, setCategories] = useState([] as ICategory[]);
   const [selectedPrice, setSelectedPrice] = useState({ min: 0, max: Number.MAX_SAFE_INTEGER });
   const [selectedCategories, setSelectedCategories] = useState([] as string[]);
   const [sortOption, setSortOption] = useState('newest');
-  const categoryStore = useCategory();
+  const [currentPage, setCurrentPage] = useState(1);
+
   const salePrice = [
-    { id: '1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
-    { id: '2', min: 0, max: 99999, name: 'Dưới 100,000đ' },
-    { id: '3', min: 100000, max: 200000, name: '100,000đ - 200,000đ' },
-    { id: '4', min: 200000, max: 300000, name: '200,000đ - 300,000đ' },
-    { id: '5', min: 300000, max: Number.MAX_SAFE_INTEGER, name: 'Trên 300,000đ' },
+    { id: 'price1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
+    { id: 'price2', min: 0, max: 99999, name: 'Dưới 100,000đ' },
+    { id: 'price3', min: 100000, max: 200000, name: '100,000đ - 200,000đ' },
+    { id: 'price4', min: 200000, max: 300000, name: '200,000đ - 300,000đ' },
+    { id: 'price5', min: 300000, max: Number.MAX_SAFE_INTEGER, name: 'Trên 300,000đ' },
   ];
   useEffect(() => {
     const receivedData = localStorage.getItem('getSortOption');
@@ -32,23 +34,37 @@ const ListPage = observer(() => {
   useEffect(() => {
     const fetchData = async () => {
       console.log(sortOption);
-      await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption);
-      if (categoryStore?.categories) { setCategories(categoryStore?.categories); console.log("setCaterogies"); }
+      await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
+      if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
     }
 
     fetchData();
-  }, [sortOption, selectedCategories, selectedPrice, categoryStore, bookStore]);
+  }, [sortOption, selectedCategories, selectedPrice, currentPage, categoryStore, bookStore]);
 
   //handleCategoryChange
-  const handleCategoryChange = async (category: string | null, price: { min: number, max: number }, sortType: string) => {
-    setSelectedPrice({ min: price.min, max: price.max });
-    setSortOption(sortType);
+  const handleCategoryChange = (category: string) => {
     if (category) {
       setSelectedCategories((prev: string[]) => {
         return prev.includes(category) ? prev.filter((item: string) => item !== category) : [...prev, category]
       });
     }
   };
+
+  //handlePriceChange
+  const handlePriceChange = (price: { min: number, max: number }) => {
+    setSelectedPrice({ min: price.min, max: price.max });
+  };
+
+  //handleSortTypeChange
+  const handleSortTypeChange = (sortType: string) => {
+    setSortOption(sortType);
+  };
+
+  //handlePageChange
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
 
   return (
     <div className="flex">
@@ -66,7 +82,7 @@ const ListPage = observer(() => {
                   name="price"
                   value={price.name}
                   checked={price.min === selectedPrice.min && price.max === selectedPrice.max}
-                  onChange={() => handleCategoryChange(null, { min: price.min, max: price.max }, sortOption)}
+                  onChange={() => handlePriceChange({ min: price.min, max: price.max })}
                   className="mr-2"
                 />
                 <label htmlFor={price.id}>{price.name}</label>
@@ -86,7 +102,7 @@ const ListPage = observer(() => {
                   id={category.id}
                   value={category.categoryName}
                   checked={selectedCategories.includes(category.categoryName)}
-                  onChange={() => handleCategoryChange(category.categoryName, selectedPrice, sortOption)}
+                  onChange={() => handleCategoryChange(category.categoryName)}
                   className="mr-2"
                 />
                 <label htmlFor={category.id}>{category.categoryName}</label>
@@ -102,7 +118,7 @@ const ListPage = observer(() => {
           <h3 className="font-bold text-lg">Danh sách</h3>
           <select
             value={sortOption}
-            onChange={(e) => handleCategoryChange(null, selectedPrice, e.target.value)}
+            onChange={(e) => handleSortTypeChange(e.target.value)}
             className="border rounded p-2"
           >
             <option value="bestseller">Bán chạy nhất</option>
@@ -121,8 +137,7 @@ const ListPage = observer(() => {
 
         {/* Phân trang */}
         <div className="flex justify-center mt-8">
-          <button className="mx-2 px-4 py-2 bg-blue-600 text-white rounded-lg">Trước</button>
-          <button className="mx-2 px-4 py-2 bg-blue-600 text-white rounded-lg">Sau</button>
+          <Pagination setPagination={handlePageChange} />
         </div>
       </div>
     </div>
