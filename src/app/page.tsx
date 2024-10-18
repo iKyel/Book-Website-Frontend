@@ -4,21 +4,27 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useBook } from '@/contexts/AppContext';
 import { IBook } from '@/stores/bookStore';
-import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/navigation';
 
 const HomePage = () => {
-  const [selectedTab, setSelectedTab] = useState('new');
+  const [selectedTab, setSelectedTab] = useState('newest');
   const [books, setBooks] = useState([] as IBook[]);
   const bookStore = useBook()!;
+  const router = useRouter();
+  const [sort, setSort] = useState('newest');
 
   useEffect(() => {
     const fetchData = async () => {
-      const allBooks: IBook[] = await bookStore?.getArrangeData(selectedTab);
+      const allBooks: IBook[] = await bookStore?.getFilterandArrangeBooks([], { min: 0, max: Number.MAX_SAFE_INTEGER }, selectedTab, 1);
+      console.log(allBooks);
       setBooks(allBooks.slice(0, 6));
     }
     fetchData();
   }, [selectedTab]);
-
+  const handleWatchMore = () => {
+    setSort(selectedTab);
+    router.push('/list');
+  }
 
   return (
     <div className="w-full">
@@ -31,15 +37,15 @@ const HomePage = () => {
       <div className="flex justify-center mb-8">
         <div className="w-1/2 border-2 border-slate-300 py-2 flex justify-evenly">
           <button
-            className={`text-lg font-semibold ${selectedTab === 'new' ? 'text-blue-600' : 'text-gray-600'}`}
+            className={`text-lg font-semibold ${selectedTab === 'newest' ? 'text-blue-600' : 'text-gray-600'}`}
             onClick={() => setSelectedTab('new')}
           >
             SÁCH MỚI
           </button>
           |
           <button
-            className={`text-lg font-semibold ${selectedTab === 'bestseller' ? 'text-blue-600' : 'text-gray-600'}`}
-            onClick={() => setSelectedTab('bestseller')}
+            className={`text-lg font-semibold ${selectedTab === 'best-seller' ? 'text-blue-600' : 'text-gray-600'}`}
+            onClick={() => setSelectedTab('best-seller')}
           >
             SÁCH BÁN CHẠY
           </button>
@@ -63,8 +69,6 @@ const HomePage = () => {
             <p>Đang tải...</p>
           )}
         </div>
-
-
 
         {/* Nút Xem thêm */}
         <div className="flex justify-center mb-8">

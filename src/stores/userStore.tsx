@@ -12,6 +12,26 @@ class UserStore {
         makeAutoObservable(this);
     }
 
+    async getUser() {
+        try {
+            const response = await api.get('/profile/getProfile');
+            // const response = await api.get('api/getUser');
+            if (response.data) {
+                if (response.data.user) {
+                    runInAction(() => {
+                        this.user = response.data.user;
+                    })
+                }
+            }
+            return null;
+        } catch (error) {
+            console.log("Lỗi lấy thông tin người dùng", error);
+            if (axios.isAxiosError(error)) {
+                return error.response?.data;
+            }
+        }
+    }
+
     async signupUser(fullName: string, userName: string, password: string) {
         try {
             const response = await axiosInstance.post('/auth/register', { fullName, userName, password });
@@ -68,7 +88,7 @@ class UserStore {
 
     async changePassword(userName: string = '', oldPassword: string, newPassword: string) {
         try {
-            const response = await api.post('/profile/changePassword', { userName, oldPassword, newPassword });
+            const response = await api.put('/profile/changePassword', { userName, oldPassword, newPassword });
             if (response) {
                 return response.data;
             }
