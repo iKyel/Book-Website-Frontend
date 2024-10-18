@@ -21,12 +21,12 @@ const ProfilePage = observer(() => {
             <div>
               <span className="font-semibold">Họ tên:</span>
               <span className="bg-gray-300 rounded-md px-4 py-1">
-                {userStore.user?.fullName}
+                {userStore?.user?.fullName}
               </span>
             </div>
             <div>
               <span className="font-semibold">Tên đăng nhập:</span>
-              <span className="bg-gray-300 rounded-md px-4 py-1">{userStore.user?.userName}</span>
+              <span className="bg-gray-300 rounded-md px-4 py-1">{userStore?.user?.userName}</span>
             </div>
           </div>
         </section>
