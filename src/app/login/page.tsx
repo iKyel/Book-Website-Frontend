@@ -16,7 +16,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result: any = await userStore.loginUser(tenDangNhap, matKhau);
+    const result: any = await userStore?.loginUser(tenDangNhap, matKhau);
 
     if (result) {
       setModalMessage(result.message);
