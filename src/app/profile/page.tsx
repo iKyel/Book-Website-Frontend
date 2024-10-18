@@ -2,12 +2,13 @@
 
 import Sidebar from "@/components/organisms/Sidebar";
 import Container from "@/components/organisms/Container";
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useUser } from "@/contexts/AppContext";
 
 const ProfilePage = observer(() => {
   const userStore = useUser();
+
   return (
     <Container>
       <div className="min-h-screen flex">

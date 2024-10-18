@@ -1,12 +1,17 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../components/organisms/Container';
 import { useRouter } from 'next/navigation';
 
 const HomePage = () => {
   const router = useRouter();
+  const [sort, setSort] = useState('newest');
+
+
+
   const handleWatchMore = () => {
-    localStorage.setItem('getSortOption', 'az');
+    console.log('clickButton');
+    setSort('az');
     router.push('/list');
   }
 

@@ -7,11 +7,10 @@ const Footer = () => {
     <footer className="bg-gray-800 text-white p-6">
       <div className="container mx-auto flex flex-col md:flex-row justify-between">
         <div>
-          <h2 className="text-lg font-bold">INNOVATIVE PUBLISHING AND MEDIA</h2>
-          <p>Số 110 Nguyễn Ngọc Nại, Khương Mai, Thanh Xuân, Hà Nội</p>
-          <p>Hotline: 03 2838 3979</p>
-          <p>Email: online.ipmvn@gmail.com</p>
-          <p>Giấy phép DKDD số 0101507251, cấp lần thứ 6 năm 2019</p>
+          <h2 className="text-lg font-bold">ĐẠI HỌC GIAO THÔNG VẬN TẢI</h2>
+          <p>Số 3 phố Cầu Giấy, Láng Thượng, Đống Đa, Hà Nội</p>
+          <p>Hotline: 113</p>
+          <p>Email: utc@gmail.com</p>
         </div>
         <div className="mt-4 md:mt-0">
           <h3 className="font-bold">KẾT NỐI VỚI CHÚNG TÔI</h3>
