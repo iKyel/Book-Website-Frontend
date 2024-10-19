@@ -16,7 +16,7 @@ const SearchBar = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (inputValue.trim()) {
-                const result = await bookStore?.getBookByName(inputValue.trim());
+                const result = await bookStore?.getBookByName(inputValue.trim(), currentPage);
                 if (result) {
                     setBooks(result);
                     setHasBooks(true);
@@ -68,6 +68,7 @@ const SearchBar = () => {
             <div>
                 {hasBooks && (
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-[300%] bg-gray-100 border border-gray-300 rounded-lg shadow-lg z-10">
+                        <p> Kết quả tìm kiếm cho: {inputValue.trim()}</p>
                         <div className="grid grid-cols-4 gap-4">
                             {books && books.length > 0 ? (
                                 books.map((book) => (
@@ -84,7 +85,7 @@ const SearchBar = () => {
                             )}
                         </div>
                         <div className="flex justify-center mt-4">
-                            <Pagination setPagination={handlePageChange} />
+                            <Pagination setPagination={handlePageChange} books={books} />
                         </div>
                     </div>
                 )}

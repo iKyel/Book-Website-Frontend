@@ -9,6 +9,15 @@ export interface IBook {
     image: string
 }
 
+const convert = (book: any) => {
+    return {
+        id: book._id,
+        title: book.title,
+        salePrice: book.salePrice,
+        image: book.image
+    }
+};
+
 class BookStore {
     books: IBook[] | null = null;
 
@@ -25,9 +34,13 @@ class BookStore {
             if (response) {
                 if (response.data) {
                     runInAction(() => {
-                        this.books = response.data;
+                        this.books = response.data.map((book: any) => {
+                            convert(book);
+                        });
                     })
-                    return response.data;
+                    return response.data.map((book: any) => {
+                        convert(book);
+                    });
                 }
             }
             return null;
@@ -39,13 +52,15 @@ class BookStore {
         }
     }
 
-    async getBookByName(searchName: string) {
+    async getBookByName(searchName: string, currentPage: number) {
         try {
-            const response = await axiosInstance.post('/books/getBooksByName', { searchName })
+            const response = await axiosInstance.post('/books/getBooksByName/', { searchName, currentPage })
             // const response = await axiosInstance.post('/api/getBooksByName', { searchName })
             if (response) {
                 if (response.data) {
-                    return response.data;
+                    return response.data.map((book: any) => {
+                        convert(book);
+                    });
                 }
             }
             return null;

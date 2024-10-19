@@ -21,6 +21,7 @@ class UserStore {
                     runInAction(() => {
                         this.user = response.data.user;
                     })
+                    return response.data.user;
                 }
             }
             return null;
@@ -86,9 +87,9 @@ class UserStore {
 
     }
 
-    async changePassword(userName: string = '', oldPassword: string, newPassword: string) {
+    async changePassword(oldPassword: string, newPassword: string) {
         try {
-            const response = await api.put('/profile/changePassword', { userName, oldPassword, newPassword });
+            const response = await api.put('/profile/changePassword', { oldPassword, newPassword });
             if (response) {
                 return response.data;
             }

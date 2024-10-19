@@ -137,7 +137,7 @@ const ListPage = observer(() => {
 
         {/* Phân trang */}
         <div className="flex justify-center mt-8">
-          <Pagination setPagination={handlePageChange} />
+          <Pagination setPagination={handlePageChange} books={bookStore?.books ? bookStore.books : []} />
         </div>
       </div>
     </div>

@@ -1,15 +1,15 @@
 // components/Pagination.js
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useBook } from '@/contexts/AppContext';
+import { IBook } from '@/stores/bookStore';
 
 interface ChildComponentProps {
     setPagination: (data: number) => void;
+    books: IBook[];
 }
 
-const Pagination = observer(({ setPagination }: ChildComponentProps) => {
-    const bookStore = useBook();
-    const totalBooks = bookStore?.books ? bookStore?.books?.length : 0;
+const Pagination = observer(({ setPagination, books }: ChildComponentProps) => {
+    const totalBooks = books ? books.length : 0;
     const booksPerPage = 16;
     const totalPages = Math.ceil(totalBooks / booksPerPage);
     // const totalPages = 16;
