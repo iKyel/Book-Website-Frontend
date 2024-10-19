@@ -11,12 +11,12 @@ const LoginPage = () => {
   const [tenDangNhap, setTenDangNhap] = useState('');
   const [matKhau, setMatKhau] = useState('');
 
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState('Có lỗi xảy ra');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result: any = await userStore.loginUser(tenDangNhap, matKhau);
+    const result: any = await userStore?.loginUser(tenDangNhap, matKhau);
 
     if (result) {
       setModalMessage(result.message);
