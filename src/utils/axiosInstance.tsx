@@ -14,8 +14,8 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response && error.response.status === 500) {
-            alert("Có lỗi xảy ra bên máy chủ");
+        if (error.response && (error.response.status === 500 || error.response.status === 404)) {
+            alert(error.response.data.message);
         }
         return Promise.reject(error);
     }

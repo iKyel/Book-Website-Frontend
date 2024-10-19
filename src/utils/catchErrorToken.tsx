@@ -21,8 +21,8 @@ api.interceptors.response.use(
             destroyCookie(null, 'token'); // Xóa token nếu hết hạn hoặc không hợp lệ
             window.location.href = '/login'; // Điều hướng sang trang đăng nhập
         }
-        if (error.response && error.response.status === 500) {
-            alert("Có lỗi xảy ra bên máy chủ");
+        if (error.response && (error.response.status === 500 || error.response.status === 404)) {
+            alert(error.response.data.message);
         }
         return Promise.reject(error);
     }
