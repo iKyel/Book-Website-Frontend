@@ -54,7 +54,7 @@ const Change_Password = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = await userStore?.changePassword(userStore.user?.userName, form.oldPassword, form.newPassword);
+        const result = await userStore?.changePassword(form.oldPassword, form.newPassword);
         setModalMessage(result.message);
         setIsModalOpen(true);
 
@@ -63,7 +63,7 @@ const Change_Password = () => {
     //handleModal
     const handleModal = async () => {
         setIsModalOpen(false);
-        if (modalMessage === "Mật khẩu không khớp. Hãy nhập lại!") {
+        if (modalMessage === "Mật khẩu cũ bị sai, hãy nhập lại!") {
             setErrors({
                 ...errors,
                 oldPassword: modalMessage

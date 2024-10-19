@@ -6,6 +6,12 @@ export interface ICategory {
     id: string,
     categoryName: string
 }
+const convert = (category: any) => {
+    return {
+        id: category._id,
+        categoryName: category.categoryName
+    }
+}
 
 class CategoryStore {
     categories: ICategory[] | null = null;
@@ -17,13 +23,18 @@ class CategoryStore {
 
     async getCategories() {
         try {
-            const response = await axiosInstance.get('/api/categories');
+            // const response = await axiosInstance.get('/api/categories');
+            const response = await axiosInstance.get('/books/getCategories');
             if (response) {
                 if (response.data) {
                     runInAction(() => {
-                        this.categories = response.data;
+                        this.categories = response.data.map((category: any) => {
+                            convert(category);
+                        });
                     })
-                    return response.data;
+                    return response.data.map((category: any) => {
+                        convert(category);
+                    });
                 }
             }
             return null;
