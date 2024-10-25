@@ -12,6 +12,7 @@ const Login_Logout = observer(() => {
     useEffect(() => {
         const fetchData = async () => {
             const result = await userStore?.getUser();
+            console.log(result, "result");
             if (result) setHasUser(true);
         }
         fetchData();

@@ -2,6 +2,7 @@
 import Pagination from '@/components/molecules/Pagination';
 import ListBooks from '@/components/organisms/ListBooks';
 import { useBook, useCategory } from '@/contexts/AppContext';
+import { IBook } from '@/stores/bookStore';
 import { ICategory } from '@/stores/categoryStore';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ const ListPage = observer(() => {
   const [selectedCategories, setSelectedCategories] = useState([] as string[]);
   const [sortOption, setSortOption] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [books, setBooks] = useState([] as IBook[]);
 
   const salePrice = [
     { id: 'price1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
@@ -34,8 +36,9 @@ const ListPage = observer(() => {
   useEffect(() => {
     const fetchData = async () => {
       console.log(sortOption);
-      await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
+      const result: IBook[] = await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
       if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
+      if (result) { setBooks(result); }
     }
 
     fetchData();
@@ -132,7 +135,7 @@ const ListPage = observer(() => {
         {/*Bên phải */}
         {/* Danh sách sách */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-          <ListBooks />
+          <ListBooks books={books} />
         </div>
 
         {/* Phân trang */}
