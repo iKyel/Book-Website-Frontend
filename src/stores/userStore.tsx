@@ -14,9 +14,9 @@ class UserStore {
 
     async getUser() {
         try {
-            const response = await api.get('/profile/getProfile');
+            const response = await axiosInstance.get('/profile/getProfile');
             // const response = await api.get('api/getUser');
-            if (response.data) {
+            if (response) {
                 if (response.data.user) {
                     runInAction(() => {
                         this.user = response.data.user;
@@ -27,7 +27,7 @@ class UserStore {
             return null;
         } catch (error) {
             console.log("Lỗi lấy thông tin người dùng", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -68,7 +68,7 @@ class UserStore {
 
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -95,7 +95,7 @@ class UserStore {
             }
         } catch (error) {
             console.error('Có lỗi xảy ra khi thay đổi mật khẩu', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }

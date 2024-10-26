@@ -53,11 +53,11 @@ const Change_Password = () => {
     //handleSubmit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const result = await userStore?.changePassword(form.oldPassword, form.newPassword);
-        setModalMessage(result.message);
-        setIsModalOpen(true);
-
+        if (hasErrors) {
+            const result = await userStore?.changePassword(form.oldPassword, form.newPassword);
+            setModalMessage(result.message);
+            setIsModalOpen(true);
+        }
     }
 
     //handleModal

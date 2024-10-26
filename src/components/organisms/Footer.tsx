@@ -17,13 +17,13 @@ const Footer = () => {
           <p>CÁC KÊNH KHÁC</p>
           <div className="flex space-x-2">
             <Link href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-              <Image src="./facebook.svg" alt="Facebook" width={24} height={24} />
+              <Image src="/facebook.svg" alt="Facebook" width={24} height={24} />
             </Link>
             <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <Image src="./twitter.svg" alt="Twitter" width={24} height={24} />
+              <Image src="/twitter.svg" alt="Twitter" width={24} height={24} />
             </Link>
             <Link href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-              <Image src="./youtube.svg" alt="YouTube" width={24} height={24} />
+              <Image src="/youtube.svg" alt="YouTube" width={24} height={24} />
             </Link>
           </div>
         </div>

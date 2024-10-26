@@ -22,7 +22,7 @@ const Navbar = () => {
           <Link href="/" className="hover:underline">
             <div className="flex items-center">
               <Image
-                src="./logo.svg"
+                src="/logo.svg"
                 alt="Logo"
                 className="h-12 w-12 mr-2"
                 width={48}
@@ -65,7 +65,7 @@ const Navbar = () => {
           <Link href="/" className="hover:text-green-600 font-semibold">
             TRANG CHỦ
           </Link>
-          <Link href="/products" className="hover:text-green-600 font-semibold">
+          <Link href="/list" className="hover:text-green-600 font-semibold">
             SẢN PHẨM
           </Link>
           <Link href="/about" className="hover:text-green-600 font-semibold">
