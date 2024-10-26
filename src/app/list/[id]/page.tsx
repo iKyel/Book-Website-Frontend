@@ -63,7 +63,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                 <div className="w-2/3 ml-8">
                     <h1 className="text-2xl font-bold mb-4">{detailBook.title}</h1>
                     <p className="text-xl text-gray-700 mb-2">{detailBook.salePrice} VND</p>
-                    <p className="mb-2">Tác giả: {authorsOfBook && authorsOfBook.map((author) => (<Link href={`/author/${author.id}`}>{author.authorName};</Link>))}</p>
+                    <p className="mb-2">Tác giả: {authorsOfBook && authorsOfBook.map((author) => (<Link href={`/detailAuthor/${author.id}`}><span key={author.id} className="hover:underline">{author.authorName};</span></Link>))}</p>
                     <p className="mb-2">Năm xuất bản: {detailBook.publishedYear}</p>
                     <p className="mb-2">Kích thước: {detailBook.size}</p>
                     <p className="mb-2">Nhà xuất bản: {detailBook.publisher}</p>
