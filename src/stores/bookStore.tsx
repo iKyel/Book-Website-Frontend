@@ -29,24 +29,22 @@ class BookStore {
         // console.log("salePrice: ", salePrice);
         // console.log("categories: ", categories);
         try {
-            // const response = await axiosInstance.post('/api/filterAndArrangeBooks', { categories, salePrice, sortOption, currentPage });
-            const response = await axiosInstance.post('/books/getFilteredBooks', { categories, salePrice, sortOption, currentPage });
+            // const response = await axiosInstance.get('/api/filterAndArrangeBooks', { params: { categories, salePrice, sortOption, currentPage } });
+            const response = await axiosInstance.get('/books/getFilteredBooks', { params: { categories, salePrice, sortOption, currentPage } });
+
+            console.log(response.data);
             if (response) {
                 if (response.data) {
                     runInAction(() => {
-                        this.books = response.data.map((book: any) => {
-                            convert(book);
-                        });
-                    })
-                    return response.data.map((book: any) => {
-                        convert(book);
+                        this.books = response.data.map((book: any) => convert(book));
                     });
+                    return response.data.map((book: any) => convert(book));
                 }
             }
             return null;
         } catch (error) {
             console.error("Lỗi lọc, sắp xếp sách ", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -54,19 +52,17 @@ class BookStore {
 
     async getBookByName(searchName: string, currentPage: number) {
         try {
-            const response = await axiosInstance.post('/books/getBooksByName/', { searchName, currentPage })
-            // const response = await axiosInstance.post('/api/getBooksByName', { searchName })
+            const response = await axiosInstance.get('/books/getBooksByName/', { params: { searchName, currentPage } })
+            // const response = await axiosInstance.get('/api/getBooksByName', { params: { searchName, currentPage } })
             if (response) {
                 if (response.data) {
-                    return response.data.map((book: any) => {
-                        convert(book);
-                    });
+                    return response.data.map((book: any) => convert(book));
                 }
             }
             return null;
         } catch (error) {
             console.error("Lỗi tìm kiếm sách ", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useBook } from '@/contexts/AppContext';
 import { IBook } from '@/stores/bookStore';
 import { useRouter } from 'next/navigation';
+import ListBooks from '@/components/organisms/ListBooks';
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState('newest');
@@ -15,9 +16,10 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const allBooks: IBook[] = await bookStore?.getFilterandArrangeBooks([], { min: 0, max: Number.MAX_SAFE_INTEGER }, selectedTab, 1);
-      console.log(allBooks);
-      setBooks(allBooks.slice(0, 6));
+      const result = await bookStore?.getFilterandArrangeBooks([], { min: 0, max: Number.MAX_SAFE_INTEGER }, selectedTab, 1);
+      const allBooks: IBook[] = Array.isArray(result) ? result : [];
+      // console.log(allBooks, "allBooks");
+      if (allBooks) setBooks(allBooks.slice(0, 6));
     }
     fetchData();
   }, [selectedTab]);
@@ -53,21 +55,9 @@ const HomePage = () => {
       </div>
 
       {/* Danh sách sách */}
-      <div className='mx-48'>
+      <div className='mx-60'>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 px-4 mb-8">
-          {books.length > 0 ? (
-            books.map((book) => (
-              <Link href={`/books/${book.id}`} key={book.id}>
-                <div className="border rounded-lg p-4 cursor-pointer hover:shadow-lg text-center">
-                  <img src={book.image} alt={book.title} className="w-full h-80 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold mb-2">{book.title}</h3>
-                  <p className="text-gray-700">{book.salePrice}</p>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p>Đang tải...</p>
-          )}
+          <ListBooks books={books} />
         </div>
 
         {/* Nút Xem thêm */}
