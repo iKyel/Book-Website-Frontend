@@ -40,7 +40,7 @@ class CategoryStore {
             return null;
         } catch (error) {
             console.log("Lỗi lấy thể loại", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
