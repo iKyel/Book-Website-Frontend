@@ -5,8 +5,16 @@ import axiosInstance from "@/utils/axiosInstance";
 export interface IAuthor {
     id: string,
     authorName: string,
-    description: string
+    description?: string
 }
+
+const convert = (author: any) => {
+    return {
+        id: author._id,
+        authorName: author.authorName,
+        description: author.description,
+    }
+};
 
 class AuthorStore {
     authors: IAuthor[] | null = null;
@@ -19,10 +27,11 @@ class AuthorStore {
     async getAllAuthors() {
         try {
             const response = await axiosInstance.get('/books/getAuthors');
-            if (response.data) {
+            if (response.data.authors) {
                 runInAction(() => {
-                    this.authors = response.data;
-                })
+                    this.authors = response.data.authors.map((author: any) => convert(author));
+                });
+                return response.data.authors.map((author: any) => convert(author));
             }
             return null;
         } catch (error) {

@@ -41,7 +41,7 @@ const HomePage = () => {
         <div className="w-1/2 border-2 border-slate-300 py-2 flex justify-evenly">
           <button
             className={`text-lg font-semibold ${selectedTab === 'newest' ? 'text-blue-600' : 'text-gray-600'}`}
-            onClick={() => setSelectedTab('new')}
+            onClick={() => setSelectedTab('newest')}
           >
             SÁCH MỚI
           </button>

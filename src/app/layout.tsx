@@ -6,7 +6,6 @@ import Footer from "../components/organisms/Footer";
 import { AppProvider } from '@/contexts/AppContext';
 
 const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "Book Webstie",
   description: "Website bán sách trực tuyến",

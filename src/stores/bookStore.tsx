@@ -14,9 +14,17 @@ const convert = (book: any) => {
         id: book._id,
         title: book.title,
         salePrice: book.salePrice,
-        image: book.image
+        image: book.imageURL
     }
 };
+
+const convert_categories = (categories: string[]) => {
+    return categories.join(",");
+}
+
+const convert_price = (salePrice: any) => {
+    return Object.values(salePrice).join(':');
+}
 
 class BookStore {
     books: IBook[] | null = null;
@@ -26,19 +34,20 @@ class BookStore {
     }
 
     async getFilterandArrangeBooks(categories: string[], salePrice: { min: number, max: number }, sortOption: string, currentPage: number) {
-        // console.log("salePrice: ", salePrice);
-        // console.log("categories: ", categories);
+        const page = currentPage;
+        const sortBy = sortOption;
+        const types = convert_categories(categories);
+        const priceRange = convert_price(salePrice);
         try {
             // const response = await axiosInstance.get('/api/filterAndArrangeBooks', { params: { categories, salePrice, sortOption, currentPage } });
-            const response = await axiosInstance.get('/books/getFilteredBooks', { params: { categories, salePrice, sortOption, currentPage } });
-
-            console.log(response.data);
+            const response = await axiosInstance.get('/books/getFilteredBooks', { params: { types, priceRange, sortBy, page } });
+            // console.log(response.data);
             if (response) {
-                if (response.data) {
+                if (response.data.listBooks) {
                     runInAction(() => {
-                        this.books = response.data.map((book: any) => convert(book));
+                        this.books = response.data.listBooks.map((book: any) => convert(book));
                     });
-                    return response.data.map((book: any) => convert(book));
+                    return response.data.listBooks.map((book: any) => convert(book));
                 }
             }
             return null;
@@ -51,12 +60,13 @@ class BookStore {
     }
 
     async getBookByName(searchName: string, currentPage: number) {
+        const page = currentPage;
         try {
-            const response = await axiosInstance.get('/books/getBooksByName/', { params: { searchName, currentPage } })
+            const response = await axiosInstance.get('/books/getBooksByName/', { params: { searchName, page } })
             // const response = await axiosInstance.get('/api/getBooksByName', { params: { searchName, currentPage } })
             if (response) {
-                if (response.data) {
-                    return response.data.map((book: any) => convert(book));
+                if (response.data.listBooks) {
+                    return response.data.listBooks.map((book: any) => convert(book));
                 }
             }
             return null;
