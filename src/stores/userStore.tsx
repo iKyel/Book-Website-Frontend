@@ -21,7 +21,7 @@ class UserStore {
                     runInAction(() => {
                         this.user = response.data.user;
                     })
-                    return response.data.user;
+                    return response.data;
                 }
             }
             return null;
@@ -58,10 +58,6 @@ class UserStore {
                     runInAction(() => {
                         this.user = user;
                     })
-                    // const user: IUser = { userName: 'hoang', fullName: 'Hoang' };
-                    // runInAction(() => {
-                    //     this.user = user;
-                    // })
                 }
                 return response.data;
             }
@@ -78,7 +74,9 @@ class UserStore {
         try {
             const response = await axiosInstance.get('/auth/logout');
             if (response.data) {
-                this.user = null;
+                runInAction(() => {
+                    this.user = null;
+                })
                 return response.data;
             }
         } catch (error) {

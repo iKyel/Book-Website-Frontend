@@ -7,22 +7,13 @@ import React, { useEffect, useState } from "react"
 
 const Login_Logout = observer(() => {
     const userStore = useUser();
-    const [hasUser, setHasUser] = useState(false);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const result = await userStore?.getUser();
-            if (result) setHasUser(true);
-        }
-        fetchData();
-    }, [userStore]);
 
     return (
-        <div>{hasUser
+        <div>{userStore?.user
             ? (
                 <div>
-                    <Link href="/profile" className="hover:underline">
-                        <p className="font-bold">Xin chào: {userStore?.user?.fullName}</p>
+                    <Link href="/profile">
+                        <p >Xin chào: <span className="font-bold hover:underline">{userStore?.user?.fullName}</span></p>
                     </Link>
                 </div>
             )

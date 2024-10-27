@@ -79,7 +79,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (hasErrors) {
+    if (!hasErrors) {
       const result = await userStore?.signupUser(form.fullName, form.userName, form.password);
       setModalMessage(result.message);
       setIsModalOpen(true);

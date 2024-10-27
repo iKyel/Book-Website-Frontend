@@ -5,7 +5,6 @@ import { useAuthor, useBook, useCategory } from '@/contexts/AppContext';
 import { IAuthor } from '@/stores/authorStore';
 import { IBook } from '@/stores/bookStore';
 import { ICategory } from '@/stores/categoryStore';
-import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 
 interface AuthorDetailProp {
@@ -34,13 +33,6 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
         { id: 'price4', min: 200000, max: 300000, name: '200,000đ - 300,000đ' },
         { id: 'price5', min: 300000, max: Number.MAX_SAFE_INTEGER, name: 'Trên 300,000đ' },
     ];
-    useEffect(() => {
-        const receivedData = localStorage.getItem('getSortOption');
-        if (receivedData) {
-            setSortOption(receivedData);
-            localStorage.removeItem('getSortOption');
-        }
-    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,6 +40,7 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
             if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
             if (result) {
                 if (result.listBooks) { setBooks(result.listBooks); }
+                else { setBooks([]) }
                 if (result.author) { setAuthor(result.author); }
             }
         }
@@ -142,7 +135,7 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
                     </select>
                 </div>
                 <div className='mb-6'>
-                    <p>{author.description}</p>
+                    <p>{author.description && author.description?.length <= 240 ? author.description : author.description?.slice(0, 240) + ' ...'}</p>
                 </div>
 
                 {/*Bên phải */}
