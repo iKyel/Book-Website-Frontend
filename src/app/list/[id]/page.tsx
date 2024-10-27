@@ -1,7 +1,6 @@
 'use client';
 import ListBooks from "@/components/organisms/ListBooks";
-import { useAuthor, useBook, useCategory, useDetailBook } from "@/contexts/AppContext";
-import { IAuthor } from "@/stores/authorStore";
+import { useDetailBook } from "@/contexts/AppContext";
 import { IBook } from "@/stores/bookStore";
 import { IDetailBook } from "@/stores/detailBookStore";
 import Link from "next/link";
@@ -15,29 +14,25 @@ interface BookDetailProps {
 
 const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
     const detailBookStore = useDetailBook();
-    const bookStore = useBook();
-    const authorStore = useAuthor();
     const { id } = params;
 
     const [detailBook, setDetailBook] = useState({} as IDetailBook);
     const [relatedBooks, setRelatedBooks] = useState([] as IBook[]);
-    const [authorsOfBook, setAuthorsOfBooks] = useState([] as IAuthor[]);
     const [numOfBooks, setNumOfBooks] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
-            const res_detailbook: IDetailBook = await detailBookStore?.getDetailBook(id);
-
-            if (res_detailbook) {
-                const res_author = await authorStore?.getAuthorIdByAuthorName(res_detailbook.authors);
-                const res_relatedBooks = await bookStore?.getFilterandArrangeBooks(res_detailbook.categories, { min: 0, max: Number.MAX_SAFE_INTEGER }, 'best-seller', 1);
-                if (res_relatedBooks) setRelatedBooks(res_relatedBooks.slice(0, 3));
-                if (res_author) setAuthorsOfBooks(res_author);
-                setDetailBook(res_detailbook);
+            const res_detailbook = await detailBookStore?.getDetailBook(id);
+            console.log(res_detailbook);
+            if (res_detailbook.detailBook) {
+                setDetailBook(res_detailbook.detailBook);
+            }
+            if (res_detailbook.listBooks) {
+                setRelatedBooks(res_detailbook.listBooks);
             }
         }
         fetchData();
-    }, [id, detailBookStore]);
+    }, [id]);
 
     const minusNumOfBooks = () => {
         if (numOfBooks > 1) setNumOfBooks(numOfBooks - 1);
@@ -63,7 +58,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                 <div className="w-2/3 ml-8">
                     <h1 className="text-2xl font-bold mb-4">{detailBook.title}</h1>
                     <p className="text-xl text-gray-700 mb-2">{detailBook.salePrice} VND</p>
-                    <p className="mb-2">Tác giả: {authorsOfBook && authorsOfBook.map((author) => (<Link href={`/detailAuthor/${author.id}`} key={author.id}><span className="hover:underline">{author.authorName};</span></Link>))}</p>
+                    <p className="mb-2">Tác giả: {detailBook.authors && detailBook.authors.map((author) => (<Link href={`/detailAuthor/${author.id}`} key={author.id}><span className="hover:underline">{author.authorName};</span></Link>))}</p>
                     <p className="mb-2">Năm xuất bản: {detailBook.publishedYear}</p>
                     <p className="mb-2">Kích thước: {detailBook.size}</p>
                     <p className="mb-2">Nhà xuất bản: {detailBook.publisher}</p>
@@ -90,7 +85,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                     {/* Thể loại sách */}
                     <div className="flex flex-wrap">
                         <p>Danh mục:
-                            {detailBook.categories && detailBook.categories.map((category: any, index: number) => (
+                            {detailBook.categories && detailBook.categories.map((category: string, index: number) => (
                                 <span
                                     key={index}
                                     className="bg-gray-200 px-3 py-1 mr-2 mb-2 rounded text-bold"

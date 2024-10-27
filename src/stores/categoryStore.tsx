@@ -23,18 +23,15 @@ class CategoryStore {
 
     async getCategories() {
         try {
-            // const response = await axiosInstance.get('/api/categories');
+            // const response = await axiosInstance.get('/api/categories'); 
+
             const response = await axiosInstance.get('/books/getCategories');
             if (response) {
-                if (response.data) {
+                if (response.data.categories) {
                     runInAction(() => {
-                        this.categories = response.data.map((category: any) => {
-                            convert(category);
-                        });
+                        this.categories = response.data.categories.map((category: any) => convert(category));
                     })
-                    return response.data.map((category: any) => {
-                        convert(category);
-                    });
+                    return response.data.categories.map((category: any) => convert(category));
                 }
             }
             return null;
@@ -45,11 +42,6 @@ class CategoryStore {
             }
         }
     }
-
-    async getCategoriesbyBookID() {
-
-    }
-
 }
 
 export const categoryStore = new CategoryStore();
