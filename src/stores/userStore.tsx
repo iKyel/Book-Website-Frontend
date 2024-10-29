@@ -42,7 +42,7 @@ class UserStore {
 
         } catch (error) {
             console.error("Lỗi đăng kí", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }

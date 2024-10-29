@@ -35,7 +35,6 @@ const ListPage = observer(() => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(sortOption);
       const result: IBook[] = await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
       if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
       if (result) { setBooks(result); }

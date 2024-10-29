@@ -9,6 +9,14 @@ export interface IBook {
     image: string
 }
 
+const convert_categories = (categories: string[]) => {
+    return categories.join(",");
+}
+
+const convert_price = (salePrice: any) => {
+    return Object.values(salePrice).join(':');
+}
+
 const convert = (book: any) => {
     return {
         id: book._id,
@@ -17,14 +25,6 @@ const convert = (book: any) => {
         image: book.imageURL
     }
 };
-
-const convert_categories = (categories: string[]) => {
-    return categories.join(",");
-}
-
-const convert_price = (salePrice: any) => {
-    return Object.values(salePrice).join(':');
-}
 
 class BookStore {
     books: IBook[] | null = null;
@@ -41,7 +41,8 @@ class BookStore {
         try {
             // const response = await axiosInstance.get('/api/filterAndArrangeBooks', { params: { categories, salePrice, sortOption, currentPage } });
             const response = await axiosInstance.get('/books/getFilteredBooks', { params: { types, priceRange, sortBy, page } });
-            // console.log(response.data);
+            // console.log(response.data.listBooks);
+
             if (response) {
                 if (response.data.listBooks) {
                     runInAction(() => {

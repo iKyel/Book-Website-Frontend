@@ -14,6 +14,11 @@ const ProfilePage = observer(() => {
     setIsClient(true);
   }, []);
 
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <Container>
       <div className="min-h-screen flex">
@@ -30,13 +35,10 @@ const ProfilePage = observer(() => {
                 {userStore?.user?.fullName}
               </span>
               }
-
-
             </div>
             <div>
               <span className="font-semibold">Tên đăng nhập:</span>
               {isClient && <span className="bg-gray-300 rounded-md px-4 py-1">{userStore?.user?.userName}</span>}
-
             </div>
           </div>
         </section>

@@ -38,7 +38,7 @@ class CategoryStore {
         } catch (error) {
             console.log("Lỗi lấy thể loại", error);
             if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
-                return error.response.data;
+                return error.response?.data;
             }
         }
     }
