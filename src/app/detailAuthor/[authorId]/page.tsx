@@ -25,6 +25,9 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [books, setBooks] = useState([] as IBook[]);
     const [author, setAuthor] = useState({} as IAuthor);
+    const [isExpanded, setIsExpanded] = useState(false);
+
+
 
     const salePrice = [
         { id: 'price1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
@@ -46,6 +49,11 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
         }
         fetchData();
     }, [sortOption, selectedCategories, selectedPrice, currentPage, categoryStore]);
+
+    //toggleDescription
+    const toggleDescription = () => {
+        setIsExpanded(!isExpanded);
+    };
 
     //handleCategoryChange
     const handleCategoryChange = (category: string) => {
@@ -135,7 +143,20 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
                     </select>
                 </div>
                 <div className='mb-6'>
-                    <p>{author.description && author.description?.length <= 240 ? author.description : author.description?.slice(0, 240) + ' ...'}</p>
+                    <p>
+                        {author.description &&
+                            (isExpanded ? author.description : author.description.slice(0, 380) + '... ')
+                        }
+                        {author.description && author.description.length > 380 && (
+                            <span
+                                onClick={toggleDescription}
+                                className='text-blue-400 cursor-pointer hover:underline'
+                            >
+                                {isExpanded ? ' Thu gọn' : 'Xem thêm'}
+                            </span>
+                        )}
+                    </p>
+
                 </div>
 
                 {/*Bên phải */}
