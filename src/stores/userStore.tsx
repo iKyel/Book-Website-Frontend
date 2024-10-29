@@ -10,6 +10,7 @@ class UserStore {
 
     constructor() {
         makeAutoObservable(this);
+        this.getUser();
     }
 
     async getUser() {
