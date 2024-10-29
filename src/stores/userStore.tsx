@@ -10,24 +10,25 @@ class UserStore {
 
     constructor() {
         makeAutoObservable(this);
+        this.getUser();
     }
 
     async getUser() {
         try {
-            const response = await api.get('/profile/getProfile');
+            const response = await axiosInstance.get('/profile/getProfile');
             // const response = await api.get('api/getUser');
-            if (response.data) {
+            if (response) {
                 if (response.data.user) {
                     runInAction(() => {
                         this.user = response.data.user;
                     })
-                    return response.data.user;
+                    return response.data;
                 }
             }
             return null;
         } catch (error) {
             console.log("Lỗi lấy thông tin người dùng", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -41,7 +42,7 @@ class UserStore {
 
         } catch (error) {
             console.error("Lỗi đăng kí", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -58,17 +59,13 @@ class UserStore {
                     runInAction(() => {
                         this.user = user;
                     })
-                    // const user: IUser = { userName: 'hoang', fullName: 'Hoang' };
-                    // runInAction(() => {
-                    //     this.user = user;
-                    // })
                 }
                 return response.data;
             }
 
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -78,7 +75,10 @@ class UserStore {
         try {
             const response = await axiosInstance.get('/auth/logout');
             if (response.data) {
-                this.user = null;
+                runInAction(() => {
+                    this.user = null;
+                })
+
                 return response.data;
             }
         } catch (error) {
@@ -95,7 +95,7 @@ class UserStore {
             }
         } catch (error) {
             console.error('Có lỗi xảy ra khi thay đổi mật khẩu', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }

@@ -5,10 +5,12 @@ import { userStore } from '../stores/userStore';
 import { bookStore } from '@/stores/bookStore';
 import { categoryStore } from '@/stores/categoryStore';
 import { authorStore } from '@/stores/authorStore';
+import { detailBookStore } from '@/stores/detailBookStore';
 
 export interface AppContextProps {
     userStore: typeof userStore;
     bookStore: typeof bookStore;
+    detailBookStore: typeof detailBookStore;
     categoryStore: typeof categoryStore;
     authorStore: typeof authorStore;
 }
@@ -25,6 +27,11 @@ export const useBook = () => {
     if (context) return context.bookStore;
 }
 
+export const useDetailBook = () => {
+    const context = useContext(AppContext);
+    if (context) return context.detailBookStore;
+};
+
 export const useCategory = () => {
     const context = useContext(AppContext);
     if (context) return context.categoryStore;
@@ -37,7 +44,7 @@ export const useAuthor = () => {
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (
-        <AppContext.Provider value={{ userStore, bookStore, categoryStore, authorStore }}>
+        <AppContext.Provider value={{ userStore, bookStore, categoryStore, authorStore, detailBookStore }}>
             {children}
         </AppContext.Provider>
     );

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
+
 const axiosInstance = axios.create({
-    baseURL: 'https://book-website-backend.vercel.app',
-    // baseURL: 'http://localhost:3000',
+    baseURL: process.env.NEXT_PUBLIC_URL_BACKEND,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -14,8 +14,8 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response && (error.response.status === 500 || error.response.status === 404)) {
-            alert(error.response.data.message);
+        if (error.response && (error.response.status === 500) && typeof error.response.data === 'object') {
+            alert(error.response.data.message || "Có lỗi xảy ra (404 | 500)");
         }
         return Promise.reject(error);
     }

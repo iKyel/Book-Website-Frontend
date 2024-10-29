@@ -2,12 +2,22 @@
 
 import Sidebar from "@/components/organisms/Sidebar";
 import Container from "@/components/organisms/Container";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useUser } from "@/contexts/AppContext";
 
 const ProfilePage = observer(() => {
   const userStore = useUser();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <Container>
@@ -21,13 +31,14 @@ const ProfilePage = observer(() => {
           <div className="space-y-4">
             <div>
               <span className="font-semibold">Họ tên:</span>
-              <span className="bg-gray-300 rounded-md px-4 py-1">
+              {isClient && <span className="bg-gray-300 rounded-md px-4 py-1">
                 {userStore?.user?.fullName}
               </span>
+              }
             </div>
             <div>
               <span className="font-semibold">Tên đăng nhập:</span>
-              <span className="bg-gray-300 rounded-md px-4 py-1">{userStore?.user?.userName}</span>
+              {isClient && <span className="bg-gray-300 rounded-md px-4 py-1">{userStore?.user?.userName}</span>}
             </div>
           </div>
         </section>
