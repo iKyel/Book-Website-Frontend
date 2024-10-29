@@ -36,6 +36,9 @@ const Change_Password = () => {
         // Validation
         const newErrors = { ...errors };
 
+        if (name === 'oldPassword') {
+            newErrors.oldPassword = '';
+        }
         if (name === 'newPassword') {
             const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
             // console.log(passwordRegex.test(value));
@@ -54,7 +57,7 @@ const Change_Password = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (hasErrors) {
+        if (!hasErrors) {
             const result = await userStore?.changePassword(form.oldPassword, form.newPassword);
             setModalMessage(result.message);
             setIsModalOpen(true);
@@ -72,10 +75,7 @@ const Change_Password = () => {
             })
         }
         if (modalMessage === "Cập nhật mật khẩu thành công!") {
-            const result = await userStore?.logout();
-            if (result) {
-                router.push('/');
-            }
+            router.push('/profile');
         }
     }
 

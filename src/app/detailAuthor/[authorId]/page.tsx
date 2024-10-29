@@ -5,7 +5,6 @@ import { useAuthor, useBook, useCategory } from '@/contexts/AppContext';
 import { IAuthor } from '@/stores/authorStore';
 import { IBook } from '@/stores/bookStore';
 import { ICategory } from '@/stores/categoryStore';
-import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 
 interface AuthorDetailProp {
@@ -26,6 +25,9 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [books, setBooks] = useState([] as IBook[]);
     const [author, setAuthor] = useState({} as IAuthor);
+    const [isExpanded, setIsExpanded] = useState(false);
+
+
 
     const salePrice = [
         { id: 'price1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
@@ -34,13 +36,6 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
         { id: 'price4', min: 200000, max: 300000, name: '200,000đ - 300,000đ' },
         { id: 'price5', min: 300000, max: Number.MAX_SAFE_INTEGER, name: 'Trên 300,000đ' },
     ];
-    useEffect(() => {
-        const receivedData = localStorage.getItem('getSortOption');
-        if (receivedData) {
-            setSortOption(receivedData);
-            localStorage.removeItem('getSortOption');
-        }
-    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,11 +43,17 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
             if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
             if (result) {
                 if (result.listBooks) { setBooks(result.listBooks); }
+                else { setBooks([]) }
                 if (result.author) { setAuthor(result.author); }
             }
         }
         fetchData();
     }, [sortOption, selectedCategories, selectedPrice, currentPage, categoryStore]);
+
+    //toggleDescription
+    const toggleDescription = () => {
+        setIsExpanded(!isExpanded);
+    };
 
     //handleCategoryChange
     const handleCategoryChange = (category: string) => {
@@ -142,7 +143,20 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
                     </select>
                 </div>
                 <div className='mb-6'>
-                    <p>{author.description}</p>
+                    <p>
+                        {author.description &&
+                            (isExpanded ? author.description : author.description.slice(0, 380) + '... ')
+                        }
+                        {author.description && author.description.length > 380 && (
+                            <span
+                                onClick={toggleDescription}
+                                className='text-blue-400 cursor-pointer hover:underline'
+                            >
+                                {isExpanded ? ' Thu gọn' : 'Xem thêm'}
+                            </span>
+                        )}
+                    </p>
+
                 </div>
 
                 {/*Bên phải */}
