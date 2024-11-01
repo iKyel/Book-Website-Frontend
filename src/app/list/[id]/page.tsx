@@ -1,6 +1,7 @@
 'use client';
+import Modal from "@/components/molecules/Modal";
 import ListBooks from "@/components/organisms/ListBooks";
-import { useDetailBook } from "@/contexts/AppContext";
+import { useDetailBook, useDetailOrder } from "@/contexts/AppContext";
 import { IBook } from "@/stores/bookStore";
 import { IDetailBook } from "@/stores/detailBookStore";
 import Link from "next/link";
@@ -14,31 +15,56 @@ interface BookDetailProps {
 
 const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
     const detailBookStore = useDetailBook();
+    const detailOrderStore = useDetailOrder();
     const { id } = params;
 
     const [detailBook, setDetailBook] = useState({} as IDetailBook);
     const [relatedBooks, setRelatedBooks] = useState([] as IBook[]);
     const [numOfBooks, setNumOfBooks] = useState(1);
+    const [modalMessage, setModalMessage] = useState('Có lỗi xảy ra');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             const res_detailbook = await detailBookStore?.getDetailBook(id);
-            console.log(res_detailbook);
-            if (res_detailbook.detailBook) {
-                setDetailBook(res_detailbook.detailBook);
-            }
-            if (res_detailbook.listBooks) {
-                setRelatedBooks(res_detailbook.listBooks);
+            // console.log(res_detailbook);
+            if (res_detailbook) {
+                if (res_detailbook.detailBook) {
+                    setDetailBook(res_detailbook.detailBook);
+                }
+                if (res_detailbook.listBooks) {
+                    setRelatedBooks(res_detailbook.listBooks);
+                }
             }
         }
         fetchData();
-    }, [id]);
+    }, [detailBookStore]);
 
     const minusNumOfBooks = () => {
         if (numOfBooks > 1) setNumOfBooks(numOfBooks - 1);
     }
     const plusNumOfBooks = () => {
         setNumOfBooks(numOfBooks + 1);
+    }
+
+    const handleAddCart = async () => {
+        if (detailBook.quantity >= numOfBooks) {
+            const result = await detailOrderStore?.postDetailCart(detailBook.id, detailBook.salePrice * numOfBooks, numOfBooks);
+            if (result) {
+                setModalMessage(result.message);
+                setIsModalOpen(true);
+            }
+        }
+        else {
+            setModalMessage('Số lượng vượt quá số lượng sách hiện có');
+            setIsModalOpen(true);
+            setNumOfBooks(detailBook.quantity);
+        }
+    }
+
+    //handleModal
+    const handleModal = async () => {
+        setIsModalOpen(false);
     }
 
 
@@ -58,7 +84,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                 <div className="w-2/3 ml-8">
                     <h1 className="text-2xl font-bold mb-4">{detailBook.title}</h1>
                     <p className="text-xl text-gray-700 mb-2">{detailBook.salePrice} VND</p>
-                    <p className="mb-2">Tác giả: {detailBook.authors && detailBook.authors.map((author) => (<Link href={`/detailAuthor/${author.id}`} key={author.id}><span className="hover:underline">{author.authorName};</span></Link>))}</p>
+                    <p className="mb-2">Tác giả: {detailBook.authors && detailBook.authors.map((author, index) => (<Link href={`/detailAuthor/${author.id}`} key={index}><span className="hover:underline">{author.authorName};</span></Link>))}</p>
                     <p className="mb-2">Năm xuất bản: {detailBook.publishedYear}</p>
                     <p className="mb-2">Kích thước: {detailBook.size}</p>
                     <p className="mb-2">Nhà xuất bản: {detailBook.publisher}</p>
@@ -73,11 +99,11 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                             type="text"
                             className="mx-0.5 px-4 py-2 bg-gray-300 text-center w-12"
                             value={numOfBooks}
-                            onChange={(e) => setNumOfBooks(parseInt(e.target.value) | 0)}
+                            onChange={(e) => setNumOfBooks(parseInt(e.target.value) | 1)}
                             min="1"
                         />
                         <button className="px-4 py-2 bg-gray-400 rounded-e-lg" onClick={plusNumOfBooks}>+</button>
-                        <button className="ml-4 px-6 py-2 bg-blue-600 text-white">
+                        <button className="ml-4 px-6 py-2 bg-blue-600 text-white" onClick={handleAddCart}>
                             Thêm vào giỏ
                         </button>
                     </div>
@@ -106,6 +132,11 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                     <ListBooks books={relatedBooks} />
                 </div>
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                modalMessage={modalMessage}
+                onClose={handleModal}
+            />
         </div >
     );
 }
