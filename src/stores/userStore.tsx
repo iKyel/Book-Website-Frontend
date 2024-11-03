@@ -1,16 +1,45 @@
-// stores/UserStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
 import axiosInstance from '@/utils/axiosInstance';
 import api from '@/utils/catchErrorToken';
 import axios from 'axios';
 
-export interface IUser { userName: string; fullName: string };
+export interface IUser { id: string; userName: string; fullName: string };
+
+const convert = (user: any) => {
+    return {
+        id: user._id,
+        userName: user.userName,
+        fullName: user.fullName
+    }
+}
 
 class UserStore {
     user: IUser | null = null;
 
     constructor() {
         makeAutoObservable(this);
+        this.getUser();
+    }
+
+    async getUser() {
+        try {
+            const response = await axiosInstance.get('/profile/getProfile');
+            // const response = await api.get('api/getUser');
+            if (response) {
+                if (response.data.user) {
+                    runInAction(() => {
+                        this.user = convert(response.data.user);
+                    })
+                    return response.data;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.log("Lỗi lấy thông tin người dùng", error);
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
+                return error.response?.data;
+            }
+        }
     }
 
     async signupUser(fullName: string, userName: string, password: string) {
@@ -21,7 +50,7 @@ class UserStore {
 
         } catch (error) {
             console.error("Lỗi đăng kí", error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -36,19 +65,15 @@ class UserStore {
                 if (response.data.message === "Đăng nhập thành công!") {
                     const user = response.data.userData;
                     runInAction(() => {
-                        this.user = user;
+                        this.user = convert(user);
                     })
-                    // const user: IUser = { userName: 'hoang', fullName: 'Hoang' };
-                    // runInAction(() => {
-                    //     this.user = user;
-                    // })
                 }
                 return response.data;
             }
 
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }
@@ -58,7 +83,10 @@ class UserStore {
         try {
             const response = await axiosInstance.get('/auth/logout');
             if (response.data) {
-                this.user = null;
+                runInAction(() => {
+                    this.user = null;
+                })
+
                 return response.data;
             }
         } catch (error) {
@@ -67,15 +95,15 @@ class UserStore {
 
     }
 
-    async changePassword(userName: string = '', oldPassword: string, newPassword: string) {
+    async changePassword(oldPassword: string, newPassword: string) {
         try {
-            const response = await api.post('/profile/changePassword', { userName, oldPassword, newPassword });
+            const response = await api.put('/profile/changePassword', { oldPassword, newPassword });
             if (response) {
                 return response.data;
             }
         } catch (error) {
             console.error('Có lỗi xảy ra khi thay đổi mật khẩu', error);
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
         }

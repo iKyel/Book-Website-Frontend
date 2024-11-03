@@ -18,10 +18,11 @@ const Change_Password = () => {
     });
     const [errors, setErrors] = useState({
         oldPassword: '',
+        newPassword: '',
         confirmNewPassword: ''
     });
 
-    const [modalMessage, setModalMessage] = useState('');
+    const [modalMessage, setModalMessage] = useState('Có lỗi xảy ra');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     //handleChange
@@ -33,12 +34,20 @@ const Change_Password = () => {
         });
 
         // Validation
-        if (name === 'confirmNewPassword' || name === 'newPassword') {
-            setErrors({
-                ...errors,
-                confirmNewPassword: value === form.newPassword ? '' : 'Nhập lại mật khẩu không khớp'
-            });
+        const newErrors = { ...errors };
+
+        if (name === 'oldPassword') {
+            newErrors.oldPassword = '';
         }
+        if (name === 'newPassword') {
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            // console.log(passwordRegex.test(value));
+            newErrors.newPassword = passwordRegex.test(value) ? '' : 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ và số, không được dùng chữ tiếng việt';
+        }
+        if (name === 'confirmNewPassword' || name === 'newPassword') {
+            newErrors.confirmNewPassword = value === form.newPassword ? '' : 'Nhập lại mật khẩu không khớp';
+        }
+        setErrors(newErrors);
     };
 
     //Check Errors
@@ -48,26 +57,24 @@ const Change_Password = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = await userStore.changePassword(userStore.user?.userName, form.oldPassword, form.newPassword);
-        setModalMessage(result.message);
-        setIsModalOpen(true);
-
+        if (!hasErrors) {
+            const result = await userStore?.changePassword(form.oldPassword, form.newPassword);
+            setModalMessage(result.message);
+            setIsModalOpen(true);
+        }
     }
 
     //handleModal
     const handleModal = async () => {
         setIsModalOpen(false);
-        if (modalMessage === "Mật khẩu không khớp. Hãy nhập lại!") {
+        if (modalMessage === "Mật khẩu cũ bị sai, hãy nhập lại!") {
             setErrors({
                 ...errors,
                 oldPassword: modalMessage
             })
         }
         if (modalMessage === "Cập nhật mật khẩu thành công!") {
-            const result = await userStore.logout();
-            if (result) {
-                router.push('/');
-            }
+            router.push('/profile');
         }
     }
 
@@ -111,6 +118,9 @@ const Change_Password = () => {
                                     value={form.newPassword}
                                     required
                                 />
+                                {errors.newPassword && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>
+                                )}
                             </div>
                             <div className="mb-6">
                                 <label className="block text-sm font-medium mb-1">

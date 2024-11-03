@@ -24,7 +24,7 @@ const Register: React.FC = () => {
   });
 
   //Modal
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState('Có lỗi xảy ra');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -49,7 +49,7 @@ const Register: React.FC = () => {
     }
     if (name === 'password') {
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-      console.log(passwordRegex.test(value));
+      // console.log(passwordRegex.test(value));
       newErrors.password = passwordRegex.test(value) ? '' : 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ và số, không được dùng chữ tiếng việt';
     }
     if (name === 'confirmPassword' || name === 'password') {
@@ -79,11 +79,11 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const result = await userStore.signupUser(form.fullName, form.userName, form.password);
-
-    setModalMessage(result.message);
-    setIsModalOpen(true);
-
+    if (!hasErrors) {
+      const result = await userStore?.signupUser(form.fullName, form.userName, form.password);
+      setModalMessage(result.message);
+      setIsModalOpen(true);
+    }
   };
 
 

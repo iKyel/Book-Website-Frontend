@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { destroyCookie } from 'nookies';
 
+
 const api = axios.create({
-    baseURL: 'https://book-website-backend.vercel.app',
+    baseURL: process.env.NEXT_PUBLIC_URL_BACKEND,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -19,6 +20,9 @@ api.interceptors.response.use(
         if (error.response && (error.response.status === 401 || error.response.status === 403) && currentUrl !== '/login') {
             destroyCookie(null, 'token'); // Xóa token nếu hết hạn hoặc không hợp lệ
             window.location.href = '/login'; // Điều hướng sang trang đăng nhập
+        }
+        if (error.response && (error.response.status === 500) && typeof error.response.data === 'object') {
+            alert(error.response.data.message || "Có lỗi xảy ra (404 | 500)");
         }
         return Promise.reject(error);
     }

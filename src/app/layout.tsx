@@ -6,7 +6,6 @@ import Footer from "../components/organisms/Footer";
 import { AppProvider } from '@/contexts/AppContext';
 
 const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "Book Webstie",
   description: "Website bán sách trực tuyến",
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
   return (
-
     <html lang="vi">
       <AppProvider>
         <body className={inter.className}>
