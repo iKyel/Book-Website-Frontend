@@ -60,8 +60,8 @@ class DetailBookStore {
 
     async getDetailBook(id: string) {
         try {
-            const response = await axiosInstance.get(`/api/detailBook/${id}`);
-            // const response = await axiosInstance.get(`/books/getDetailBook/${id}`);
+            // const response = await axiosInstance.get(`/api/detailBook/${id}`);
+            const response = await axiosInstance.get(`/books/getDetailBook/${id}`);
             console.log(response);
             if (response) {
                 if (response.data) {

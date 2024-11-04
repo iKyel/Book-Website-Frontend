@@ -2,6 +2,7 @@ import api from "@/utils/catchErrorToken";
 import axios from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
 import { orderStore } from "./orderStore";
+import axiosInstance from "@/utils/axiosInstance";
 
 interface IBookProps {
     id: string,
@@ -34,6 +35,8 @@ const convert_bookProp = (bookProps: any) => {
 }
 
 const convert = (detailCart: any) => {
+    // console.log(detailCart.bookId, "detailCart, BookId");
+    // console.log(convert_bookProp(detailCart.bookId), "detailcart, convert bookId");
     return {
         ...detailCart,
         id: detailCart._id,
@@ -42,16 +45,19 @@ const convert = (detailCart: any) => {
 }
 
 class DetailOrderStore {
-    detailCarts: IDetailOrder[] = [];
+    detailOrders: IDetailOrder[] = [];
 
     constructor() {
         makeAutoObservable(this);
+        this.getDetailCartLength();
     }
 
-    async postDetailCart(bookId: string, price: number, soLgSachThem: number) {
+    async postDetailCart(bookId: string, price: number, soLgSachThem: number, soLgTonKho: number) {
         try {
-            const response = await api.post('/api/addCart', { bookId, price, soLgSachThem });
+            // const response = await api.post('/api/addCart', { bookId, price, soLgSachThem });
+            const response = await api.post('/order/addCart', { bookId, price, soLgSachThem, soLgTonKho });
             if (response.data) {
+                this.getDetailCartLength();
                 return response.data;
             }
         } catch (error) {
@@ -62,19 +68,38 @@ class DetailOrderStore {
         }
     }
 
-    async getDetailCart() {
+    async getDetailCartLength() {
         try {
-            // const response = await api.get('/order/getCart');
-            const response = await api.get('/api/getDetailCart');
-            // console.log(response, 'response detailOrderStore');
+            const response = await axiosInstance.get('/order/getCart');
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
                     runInAction(() => {
-                        this.detailCarts = response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+                        this.detailOrders = [];
+                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
+                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                }
+            }
+            else return null;
+        } catch (error) {
+            console.error("Lỗi xem chi tiết giỏ hàng", error);
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
+                return error.response?.data;
+            }
+        }
+    }
 
-                    return response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+    async getDetailCart() {
+        try {
+            const response = await api.get('/order/getCart');
+            if (response.data) {
+                const result = await orderStore.getCart(response.data.order);
+                if (result) {
+                    runInAction(() => {
+                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                    })
+                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                 }
             }
             else return null;
@@ -88,17 +113,18 @@ class DetailOrderStore {
 
     async putDetailCart(updated_list: any[], totalPrice: number) {
         try {
-            const detailOrder_list = updated_list.map((item) => { return { ...item, bookId: item.bookId.id } });
-            // const response = await api.put('/order/updateCart', {updated_list, totalPrice});
-            const response = await api.put('/api/updateCart', { detailOrder_list, totalPrice });
+            const updatedOrderDetails = updated_list.map((item) => { const { id, __v, ...productWithoutId } = item; return { ...productWithoutId, bookId: item.bookId.id } });
+            console.log(updatedOrderDetails, "detailOrder_list");
+            const response = await api.put('/order/updateCart', { updatedOrderDetails, totalPrice });
+            // const response = await api.put('/api/updateCart', { updatedOrderDetails, totalPrice });
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
                     runInAction(() => {
-                        this.detailCarts = response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
 
-                    return response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                 }
             }
         } catch (error) {
@@ -111,16 +137,16 @@ class DetailOrderStore {
 
     async deleteDetailCart(orderDetailId: string) {
         try {
-            // const response = await api.delete(`/order/deleteCart/${orderDetailId}`);
-            const response = await api.delete(`/api/deleteCart/${orderDetailId}`);
+            const response = await api.delete(`/order/deleteCart/${orderDetailId}`);
+            // const response = await api.delete(`/api/deleteCart/${orderDetailId}`);
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
                 console.log(response.data, 'deleteCart');
                 if (result) {
                     runInAction(() => {
-                        this.detailCarts = response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
-                    return response.data.orderDetail.map((detailCart: any) => convert(detailCart));
+                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                 }
             }
         } catch (error) {

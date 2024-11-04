@@ -13,6 +13,14 @@ const convert = (user: any) => {
     }
 }
 
+const convert_user = (user: any) => {
+    return {
+        id: user.userId,
+        userName: user.userName,
+        fullName: user.fullName
+    }
+}
+
 class UserStore {
     user: IUser | null = null;
 
@@ -25,10 +33,12 @@ class UserStore {
         try {
             const response = await axiosInstance.get('/profile/getProfile');
             // const response = await api.get('api/getUser');
+            // console.log(response);
             if (response) {
+                // console.log(convert_user(response.data.user), "user");
                 if (response.data.user) {
                     runInAction(() => {
-                        this.user = convert(response.data.user);
+                        this.user = convert_user(response.data.user);
                     })
                     return response.data;
                 }

@@ -12,8 +12,8 @@ const Cart = observer(() => {
   const orderStore = useOrder();
   const router = useRouter();
 
-  const originalItems = JSON.parse(JSON.stringify(detailOrderStore?.detailCarts)) || [] as IDetailOrder[];;
-  const [items, setItems] = useState<IDetailOrder[]>(detailOrderStore?.detailCarts || []);
+  const originalItems = JSON.parse(JSON.stringify(detailOrderStore?.detailOrders)) || [] as IDetailOrder[];
+  const [items, setItems] = useState<IDetailOrder[]>(detailOrderStore?.detailOrders || []);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPayment, setIsPayment] = useState(true);
@@ -52,6 +52,7 @@ const Cart = observer(() => {
       setItems(items);
       // console.log(items[index].quantity);
       // console.log(originalItems[index].quantity, "quantity");
+      // console.log(originalItems, items, index, originalItems[index]);
       if (compareArrays(items, originalItems)) { setIsUpdated(false); setIsPayment(true) }
       else { setIsUpdated(true); setIsPayment(false) }
       calculateTotal();
@@ -94,12 +95,12 @@ const Cart = observer(() => {
       </div>
 
       {/* Danh sách sản phẩm */}
-      {items.map((item, index) => (
+      {items.length > 0 ? items.map((item, index) => (
         <div key={index} className="grid grid-cols-6 gap-4 items-center py-2 border-b">
-          <Link href={`/list/${item.bookId.id}`} className='col-span-3'>
+          <Link href={`/list/${item.bookId?.id}`} className='col-span-3'>
             <div className="flex items-center space-x-4">
-              <img src={item.bookId.imageURL} alt={item.bookId.title} className="h-32 object-cover rounded" />
-              <span>{item.bookId.title}</span>
+              <img src={item.bookId?.imageURL} alt={item.bookId?.title} className="h-32 object-cover rounded" />
+              <span>{item.bookId?.title}</span>
             </div>
           </Link>
 
@@ -115,14 +116,16 @@ const Cart = observer(() => {
           </div>
 
           {/* Giá tiền */}
-          <span className='mx-auto'>{item.bookId.salePrice * item.quantity} đ</span>
+          <span className='mx-auto'>{item.bookId?.salePrice * item.quantity} đ</span>
 
           {/* Nút xóa */}
-          <button onClick={() => handleDelete(item.bookId.id)} className="text-red-600 hover:underline mx-auto">
+          <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:underline mx-auto">
             Xóa
           </button>
         </div>
-      ))}
+      ))
+        : <></>
+      }
 
       {/* Tổng giá */}
       <div className="flex justify-end items-center mt-4 font-semibold">

@@ -49,7 +49,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
 
     const handleAddCart = async () => {
         if (detailBook.quantity >= numOfBooks) {
-            const result = await detailOrderStore?.postDetailCart(detailBook.id, detailBook.salePrice * numOfBooks, numOfBooks);
+            const result = await detailOrderStore?.postDetailCart(detailBook.id, detailBook.salePrice * numOfBooks, numOfBooks, detailBook.quantity);
             if (result) {
                 setModalMessage(result.message);
                 setIsModalOpen(true);
