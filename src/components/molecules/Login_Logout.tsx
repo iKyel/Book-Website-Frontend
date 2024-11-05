@@ -20,11 +20,11 @@ const Login_Logout = observer(() => {
             : (
                 <div>
                     <Link href="/register" className="hover:underline">
-                        Đăng ký
+                        <span>Đăng ký</span>
                     </Link>
                     {" | "}
                     <Link href="/login" className="hover:underline">
-                        Đăng nhập
+                        <span>Đăng nhập</span>
                     </Link>
                 </div >)
         }

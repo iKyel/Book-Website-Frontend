@@ -34,13 +34,13 @@ const convert_bookProp = (bookProps: any) => {
     }
 }
 
-const convert = (detailCart: any) => {
+const convert = (detailOrder: any) => {
     // console.log(detailCart.bookId, "detailCart, BookId");
     // console.log(convert_bookProp(detailCart.bookId), "detailcart, convert bookId");
     return {
-        ...detailCart,
-        id: detailCart._id,
-        bookId: convert_bookProp(detailCart.bookId),
+        ...detailOrder,
+        id: detailOrder._id,
+        bookId: convert_bookProp(detailOrder.bookId),
     }
 }
 
@@ -49,7 +49,6 @@ class DetailOrderStore {
 
     constructor() {
         makeAutoObservable(this);
-        this.getDetailCartLength();
     }
 
     async postDetailCart(bookId: string, price: number, soLgSachThem: number, soLgTonKho: number) {
@@ -75,7 +74,6 @@ class DetailOrderStore {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
                     runInAction(() => {
-                        this.detailOrders = [];
                         this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
                     return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
@@ -83,7 +81,7 @@ class DetailOrderStore {
             }
             else return null;
         } catch (error) {
-            console.error("Lỗi xem chi tiết giỏ hàng", error);
+            console.error("Lỗi xem số lượng danh sách sách trong giỏ hàng", error);
             if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
                 return error.response?.data;
             }
@@ -114,7 +112,7 @@ class DetailOrderStore {
     async putDetailCart(updated_list: any[], totalPrice: number) {
         try {
             const updatedOrderDetails = updated_list.map((item) => { const { id, __v, ...productWithoutId } = item; return { ...productWithoutId, bookId: item.bookId.id } });
-            console.log(updatedOrderDetails, "detailOrder_list");
+            // console.log(updatedOrderDetails, "detailOrder_list");
             const response = await api.put('/order/updateCart', { updatedOrderDetails, totalPrice });
             // const response = await api.put('/api/updateCart', { updatedOrderDetails, totalPrice });
             if (response.data) {
@@ -141,12 +139,33 @@ class DetailOrderStore {
             // const response = await api.delete(`/api/deleteCart/${orderDetailId}`);
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
-                console.log(response.data, 'deleteCart');
+                // console.log(response.data, 'deleteCart');
                 if (result) {
                     runInAction(() => {
                         this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
                     return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi xóa chi tiết giỏ hàng", error);
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
+                return error.response.data;
+            }
+        }
+    }
+
+    async getDetailOrders(orderId: string) {
+        try {
+            // const response = await api.get(`/order/getOrderDetails/${orderId}`);
+            const response = await api.get(`/api/getOrderDetails/${orderId}`);
+            if (response.data) {
+                const result = orderStore.getConvertOrder(response.data.order);
+                if (result) {
+                    runInAction(() => {
+                        this.detailOrders = response.data.orderDetails.map((detailOrder: any) => convert(detailOrder));
+                    })
+                    return { order: result, detailOrders: response.data.orderDetails.map((detailOrder: any) => convert(detailOrder)) };
                 }
             }
         } catch (error) {
