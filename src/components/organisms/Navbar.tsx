@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Login_Logout from "../molecules/Login_Logout";
 import SearchBar from "../molecules/SearchBar";
+import CartButton from "../molecules/CartButon";
 
 const Navbar = () => {
   return (
@@ -52,8 +53,7 @@ const Navbar = () => {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 8h14l-2-8M7 13h10m-7 4h4"
                 />
               </svg>
-              <span className="ml-2">Giỏ hàng</span>
-              <span className="ml-1 text-sm">(0 sản phẩm)</span>
+              <CartButton />
             </Link>
           </div>
         </div>

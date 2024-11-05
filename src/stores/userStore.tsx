@@ -3,7 +3,23 @@ import axiosInstance from '@/utils/axiosInstance';
 import api from '@/utils/catchErrorToken';
 import axios from 'axios';
 
-export interface IUser { userName: string; fullName: string };
+export interface IUser { id: string; userName: string; fullName: string };
+
+const convert = (user: any) => {
+    return {
+        id: user._id,
+        userName: user.userName,
+        fullName: user.fullName
+    }
+}
+
+const convert_user = (user: any) => {
+    return {
+        id: user.userId,
+        userName: user.userName,
+        fullName: user.fullName
+    }
+}
 
 class UserStore {
     user: IUser | null = null;
@@ -17,10 +33,12 @@ class UserStore {
         try {
             const response = await axiosInstance.get('/profile/getProfile');
             // const response = await api.get('api/getUser');
+            // console.log(response);
             if (response) {
+                // console.log(convert_user(response.data.user), "user");
                 if (response.data.user) {
                     runInAction(() => {
-                        this.user = response.data.user;
+                        this.user = convert_user(response.data.user);
                     })
                     return response.data;
                 }
@@ -57,7 +75,7 @@ class UserStore {
                 if (response.data.message === "Đăng nhập thành công!") {
                     const user = response.data.userData;
                     runInAction(() => {
-                        this.user = user;
+                        this.user = convert(user);
                     })
                 }
                 return response.data;
