@@ -1,5 +1,6 @@
 'use client';
 
+import Modal from '@/components/molecules/Modal';
 import { useDetailOrder, useOrder } from '@/contexts/AppContext';
 import { IDetailOrder } from '@/stores/detailOderStore';
 import { observer } from 'mobx-react-lite';
@@ -17,6 +18,10 @@ const Cart = observer(() => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPayment, setIsPayment] = useState(true);
+
+  //Modal
+  const [modalMessage, setModalMessage] = useState('Có lỗi xảy ra');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +86,24 @@ const Cart = observer(() => {
     }
   };
 
+  const handleModal = () => {
+    setIsModalOpen(false);
+  }
+
+  //handlePayment
+  const handlePayment = async () => {
+    const result = await orderStore?.checkQuantityBook(orderStore.orders[0].id);
+    if (result) {
+      if (result.message === 'Cho phép thanh toán!') {
+        router.push('/payment');
+      }
+      else {
+        setModalMessage(result.message);
+        setIsModalOpen(true);
+      }
+    }
+  }
+
 
   return (
     <div className="w-full max-w-4xl mx-auto my-8 p-4 bg-white shadow-lg rounded-lg">
@@ -144,13 +167,20 @@ const Cart = observer(() => {
           >
             Cập nhật
           </button>
-          <button className={`px-4 py-2 rounded ${isPayment ? 'bg-green-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+          <button
+            onClick={handlePayment}
+            className={`px-4 py-2 rounded ${isPayment ? 'bg-green-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             disabled={!isPayment}
           >
             Thanh toán
           </button>
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        modalMessage={modalMessage}
+        onClose={handleModal}
+      />
     </div>
   );
 });

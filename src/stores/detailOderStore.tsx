@@ -157,8 +157,8 @@ class DetailOrderStore {
 
     async getDetailOrders(orderId: string) {
         try {
-            // const response = await api.get(`/order/getOrderDetails/${orderId}`);
-            const response = await api.get(`/api/getOrderDetails/${orderId}`);
+            const response = await api.get(`/order/getOrderDetails/${orderId}`);
+            // const response = await api.get(`/api/getOrderDetails/${orderId}`);
             if (response.data) {
                 const result = orderStore.getConvertOrder(response.data.order);
                 if (result) {

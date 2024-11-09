@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/react-paypal-js": "^8.7.0",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "mobx": "^6.13.3",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/paypal__checkout-server-sdk": "^1.0.8",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

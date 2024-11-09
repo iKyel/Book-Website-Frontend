@@ -42,8 +42,8 @@ class OrderStore {
 
     async getOrders() {
         try {
-            // const response = await api.get('/order/getOrders');
-            const response = await api.get('/api/getOrders');
+            const response = await api.get('/order/getOrders');
+            // const response = await api.get('/api/getOrders');
             if (response.data) {
                 if (response.data.orders) {
                     this.orders = response.data.orders.map((order: any) => convert(order));
@@ -62,6 +62,41 @@ class OrderStore {
     getConvertOrder(order_obj: any) {
         if (this.orders.some((order) => order.id === order_obj._id)) {
             return convert(order_obj);
+        }
+    }
+
+    async checkQuantityBook(orderId: string) {
+        try {
+            const response = await api.get('/order/checkQuantityBook', { params: { orderId } });
+            if (response.data) {
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Lỗi kiểm tra số lượng sách trong từng đơn hàng", error);
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
+                return error.response.data;
+            }
+        }
+    }
+
+    async completeOrder(id: string, paymentType: string, phoneNumber: string, address: string) {
+        try {
+            const response = await api.put('/order/completeOrder', { id, paymentType, phoneNumber, address });
+            if (response.data) {
+                if (response.data.order) {
+                    runInAction(() => {
+                        this.orders = [convert(response.data.order)];
+                    })
+                    return response.data;
+                }
+                return null;
+            }
+
+        } catch (error) {
+            console.error("Lỗi hoàn thành đơn hàng", error);
+            if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
+                return error.response.data;
+            }
         }
     }
 }
