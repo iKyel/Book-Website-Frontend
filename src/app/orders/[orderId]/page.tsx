@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 
 interface OrderDetailProps {
     params: {
-        id: string;
+        orderId: string;
     };
 }
 
@@ -18,7 +18,7 @@ const OrderList: React.FC<OrderDetailProps> = ({ params }) => {
     const detailOrderStore = useDetailOrder();
     const orderStore = useOrder();
     const userStore = useUser();
-    const { id } = params;
+    const { orderId } = params;
 
     const [order, setOrder] = useState<IOrder>();
     const [detailOrders, setDetailOrders] = useState<IDetailOrder[]>();
@@ -27,8 +27,10 @@ const OrderList: React.FC<OrderDetailProps> = ({ params }) => {
         const fetchData = async () => {
             const result = await orderStore?.getOrders();
             if (result) {
-                const result_list = await detailOrderStore?.getDetailOrders(id);
-                if (result_list.order && result_list.detailOrders) {
+                const result_list = await detailOrderStore?.getDetailOrders(orderId);
+                // console.log("result_list", result_list);
+                if (result_list && result_list.order && result_list.detailOrders) {
+
                     setOrder(result_list.order);
                     setDetailOrders(result_list.detailOrders);
                 }
@@ -36,6 +38,7 @@ const OrderList: React.FC<OrderDetailProps> = ({ params }) => {
         }
         fetchData();
     }, []);
+
 
     return (
         <Container>
@@ -45,7 +48,7 @@ const OrderList: React.FC<OrderDetailProps> = ({ params }) => {
                 {order && detailOrders && (
                     <OrderDetail
                         orderId={order.id || ''}
-                        orderDate={order.createAt || ''}
+                        orderDate={order.updatedAt || ''}
                         paymentType={order.paymentType || ''}
                         address={order.address || ''}
                         phoneNumber={order.phoneNumber || ''}

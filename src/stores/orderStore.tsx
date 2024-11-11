@@ -1,6 +1,7 @@
 import api from "@/utils/catchErrorToken";
 import axios from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
+import { detailOrderStore } from "./detailOderStore";
 
 export interface IOrder {
     id: string;
@@ -11,18 +12,20 @@ export interface IOrder {
     phoneNumber?: string;
     address?: string;
     createAt?: string;
+    updatedAt?: string;
     deliveryBrand?: string;
 }
 
 const convert = (order: any) => {
     return {
         ...order,
-        id: order._id
+        id: order._id,
     }
 }
 
 class OrderStore {
     orders: IOrder[] = [];
+    cart: IOrder[] = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -31,8 +34,9 @@ class OrderStore {
     async getCart(cart: any) {
         if (cart) {
             runInAction(() => {
-                this.orders = [convert(cart)];
+                this.cart = [convert(cart)];
             })
+            // console.log(this.cart);
             return true;
         }
         else {
@@ -46,9 +50,12 @@ class OrderStore {
             // const response = await api.get('/api/getOrders');
             if (response.data) {
                 if (response.data.orders) {
-                    this.orders = response.data.orders.map((order: any) => convert(order));
+                    runInAction(() => {
+                        this.orders = response.data.orders.map((order: any) => convert(order));
+                    })
+                    return response.data.orders;
                 }
-                return response.data.orders;
+
             }
 
         } catch (error) {
@@ -81,8 +88,8 @@ class OrderStore {
 
     async completeOrder(id: string, paymentType: string, phoneNumber: string, address: string) {
         try {
-            const response = await api.put('/order/completeOrder', { id, paymentType, phoneNumber, address });
-            if (response.data) {
+            const response = await api.put('/order/createOrder', { order: { id, paymentType, phoneNumber, address } });
+            if (response && response.data) {
                 if (response.data.order) {
                     runInAction(() => {
                         this.orders = [convert(response.data.order)];

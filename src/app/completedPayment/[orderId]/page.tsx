@@ -5,29 +5,46 @@ import { useDetailOrder, useOrder, useUser } from '@/contexts/AppContext';
 import { IBook } from '@/stores/bookStore';
 import { IDetailOrder } from '@/stores/detailOderStore';
 import { IOrder } from '@/stores/orderStore';
-import { useParams, useRouter } from 'next/navigation';
+import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-const CompletedPayment = () => {
-  const params = useParams();
-  const id = params.orderId as string;
+interface OrderDetailProps {
+  params: {
+    orderId: string;
+  };
+}
+
+const CompletedPayment: React.FC<OrderDetailProps> = observer(({ params }) => {
+  const { orderId } = params;
+  // console.log(orderId, "orderId");
 
   const router = useRouter();
   const detailOrderStore = useDetailOrder();
   const userStore = useUser();
+  const orderStore = useOrder();
+
   const [order, setOrder] = useState<IOrder>();
   const [detailOrders, setDetailOrders] = useState<IDetailOrder[]>();
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await detailOrderStore?.getDetailOrders(id);
-      if (result && result.order && result.detailOrders) {
-        setOrder(result.order);
-        setDetailOrders(result.detailOrders);
+      await detailOrderStore?.getDetailCartLength();
+      const result = await orderStore?.getOrders();
+      if (result) {
+        const result_list = await detailOrderStore?.getDetailOrders(orderId);
+        if (result_list && result_list.order && result_list.detailOrders) {
+          setOrder(result_list.order);
+          setDetailOrders(result_list.detailOrders);
+        }
       }
     }
     fetchData();
   }, []);
+
+
+
+
   return (
     <Container>
       <div className="flex w-full">
@@ -39,7 +56,7 @@ const CompletedPayment = () => {
 
           <div className="border p-4 mt-4">
             <h3 className="font-semibold">Thông tin đơn hàng</h3>
-            <p>Họ tên: {userStore?.user?.fullName}</p>
+            {order ? (<p>Họ tên: {userStore?.user?.fullName}</p>) : (<p>Đang tải thông tin...</p>)}
             <p>Địa chỉ: {order?.address}</p>
             <p>Số điện thoại: {order?.phoneNumber}</p>
             <p className="mt-2">Phương thức thanh toán: {order?.paymentType}</p>
@@ -54,15 +71,34 @@ const CompletedPayment = () => {
 
         {/* Right Div */}
         <div className="w-1/2 p-4">
-          <ListBooks books={detailOrderStore?.detailOrders?.map((detailOrder) => {
-            const book: IBook = { id: detailOrder.bookId.id, image: detailOrder.bookId.imageURL, title: detailOrder.bookId.title, salePrice: detailOrder.bookId.salePrice };
-            return book;
-          }) || [] as IBook[]} />
+          {detailOrders &&
+            detailOrders.map((item, index) => (
+              <div key={index} className="flex items-center mb-4">
+                {/* Cột hình ảnh, chiếm khoảng 1/6 */}
+                <div className="flex-[1]">
+                  <img
+                    src={item.bookId.imageURL}
+                    alt={item.bookId.title}
+                    className="w-16 h-16 object-cover"
+                  />
+                </div>
+
+                {/* Cột tiêu đề, chiếm khoảng 4/6 */}
+                <div className="flex-[4]">
+                  <h4 className="font-semibold">{item.bookId.title}</h4>
+                </div>
+
+                {/* Cột giá, căn phải, chiếm khoảng 1/6 */}
+                <div className="flex-[1] text-right">
+                  <p>{item.price.toLocaleString()}đ</p>
+                </div>
+              </div>
+            ))}
 
           <hr className="my-4" />
           <div className="flex justify-between">
             <p>Tạm tính</p>
-            <p>{order?.totalPrice}₫</p>
+            <p>{order?.totalPrice.toLocaleString()}₫</p>
           </div>
 
           <div className="flex justify-between mt-2">
@@ -73,12 +109,12 @@ const CompletedPayment = () => {
           <hr className="my-4" />
           <div className="flex justify-between font-semibold text-lg">
             <p>Tổng cộng</p>
-            <p>{order?.totalPrice}₫</p>
+            <p>{order?.totalPrice.toLocaleString()}₫</p>
           </div>
         </div>
       </div>
     </Container>
   );
-};
+});
 
 export default CompletedPayment;

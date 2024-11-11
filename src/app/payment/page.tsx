@@ -8,7 +8,26 @@ import { IBook } from '@/stores/bookStore';
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+interface Ward {
+    Code: string;
+    FullName: string;
+    DistrictCode: string;
+}
+
+interface District {
+    Code: string;
+    FullName: string;
+    ProvinceCode: string;
+    Ward: Ward[];
+}
+
+interface Province {
+    Code: string;
+    FullName: string;
+    District: District[];
+}
 
 const Payment = observer(() => {
     const userStore = useUser();
@@ -25,11 +44,19 @@ const Payment = observer(() => {
 
     }
 
+    useEffect(() => {
+        // Fetch data từ file JSON
+        fetch('/vietnamese_provinces.json')
+            .then((response) => response.json())
+            .then((data: Province[]) => {
+                setProvinces(data);
+            });
+    }, []);
+
     //handleApprove
     const handleApprove = (data: any, actions: any) => {
         return actions.order.capture().then((details: any) => {
             console.log("Transaction completed by " + details.payer.name.given_name)
-            // Xử lý sau khi thanh toán thành công (có thể gửi dữ liệu đến backend)
             setSelectedPaymentMethod('Paypal')
         })
     }
@@ -52,17 +79,43 @@ const Payment = observer(() => {
     const handleModal = () => {
         setIsModalOpen(false);
 
-        if (modalMessage === 'Đặt hàng thành công') {
-            router.push(`/completedPayment/${orderStore?.orders[0].id}`);
+        if (modalMessage === 'Đặt hàng thành công!') {
+            router.push(`/completedPayment/${orderStore?.cart[0]?.id}`);
         }
     }
 
-    // State cho dropdown tỉnh, quận/huyện, phường/xã
-    const [selectedProvince, setSelectedProvince] = useState('');
-    const [selectedDistrict, setSelectedDistrict] = useState('');
-    const [selectedWard, setSelectedWard] = useState('');
+    // state tỉnh, phường, xã
+    const [provinces, setProvinces] = useState<Province[]>([]);
+    const [districts, setDistricts] = useState<District[]>([]);
+    const [wards, setWards] = useState<Ward[]>([]);
+    const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+    const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+    const [selectedWard, setSelectedWard] = useState<string | null>(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
+    // handleProvinceChange
+    const handleProvinceChange = (provinceCode: string) => {
+        console.log(provinceCode);
+        setSelectedProvince(provinceCode);
+        const province = provinces.find((p) => p.FullName === provinceCode);
+        setDistricts(province ? province.District : []);
+        setSelectedDistrict(null);
+        setWards([]);
+    };
+
+    // handleDistrictChange
+    const handleDistrictChange = (districtCode: string) => {
+        console.log(districtCode);
+        setSelectedDistrict(districtCode);
+        const district = districts.find((d) => d.FullName === districtCode);
+        setWards(district ? district.Ward : []);
+    };
+
+    // handleWardChange
+    const handleWardChange = (wardCode: string) => {
+        console.log(wardCode);
+        setSelectedWard(wardCode);
+    }
 
     //handleChange
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +133,7 @@ const Payment = observer(() => {
             newErrors.phoneNumber = phoneNumberRegex.test(value) ? '' : 'Chỉ có thể dùng số trong khoảng 8 đến 20 số';
         }
         if (name === 'address') {
-            const addressRegex = /^[a-zA-Z0-9À-ỹ\s]{1,50}$/;
+            const addressRegex = /^[a-zA-Z0-9À-ỹ\s,/]{1,50}$/;
             newErrors.address = addressRegex.test(value) ? '' : 'Chỉ có thể dùng chữ, số, dấu cách và trong khoảng 1 đến 50 kí tự';
         }
         setErrors(newErrors);
@@ -92,11 +145,13 @@ const Payment = observer(() => {
     //Handle Submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!hasErrors) {
-            const result = await orderStore?.completeOrder(orderStore.orders[0].id, selectedPaymentMethod, form.phoneNumber, form.address);
-            setModalMessage(result.message);
-            setIsModalOpen(true);
+            const address = `${form.address}, ${selectedWard}, ${selectedDistrict}, ${selectedProvince}`;
+            const result = await orderStore?.completeOrder(orderStore.cart[0].id, selectedPaymentMethod, form.phoneNumber, address);
+            if (result && result.message) {
+                setModalMessage(result.message);
+                setIsModalOpen(true);
+            }
         }
     };
 
@@ -150,39 +205,53 @@ const Payment = observer(() => {
                             <div className="flex-1">
                                 <label className="block mb-1">Tỉnh/Thành</label>
                                 <select
-                                    value={selectedProvince}
-                                    onChange={(e) => setSelectedProvince(e.target.value)}
+                                    value={selectedProvince || ''}
+                                    onChange={(e) => handleProvinceChange(e.target.value)}
                                     className="w-full border border-gray-300 rounded p-2"
                                     required
                                 >
-                                    <option value="">Tỉnh/Thành</option>
-                                    {/* Options cho các tỉnh miền Bắc */}
+                                    <option value="">Chọn Tỉnh/Thành phố</option>
+                                    {provinces.map((province) => (
+                                        <option key={province.Code} value={province.FullName}>
+                                            {province.FullName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="flex-1">
                                 <label className="block mb-1">Quận/Huyện</label>
                                 <select
-                                    value={selectedDistrict}
-                                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                                    onChange={(e) => handleDistrictChange(e.target.value)}
+                                    value={selectedDistrict || ''}
+                                    disabled={!selectedProvince}
                                     className="w-full border border-gray-300 rounded p-2"
                                     required
                                 >
-                                    <option value="">Quận/Huyện</option>
-                                    {/* Options dựa trên tỉnh */}
+                                    <option value="">Chọn Quận/Huyện</option>
+                                    {districts.map((district) => (
+                                        <option key={district.Code} value={district.FullName}>
+                                            {district.FullName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="flex-1">
                                 <label className="block mb-1">Phường/Xã</label>
                                 <select
-                                    value={selectedWard}
-                                    onChange={(e) => setSelectedWard(e.target.value)}
+                                    onChange={(e) => handleWardChange(e.target.value)}
+                                    value={selectedWard || ''}
+                                    disabled={!selectedDistrict}
                                     className="w-full border border-gray-300 rounded p-2"
                                     required
                                 >
-                                    <option value="">Phường/Xã</option>
-                                    {/* Options dựa trên quận/huyện */}
+                                    <option value="">Chọn Phường/Xã</option>
+                                    {wards.map((ward) => (
+                                        <option key={ward.Code} value={ward.FullName}>
+                                            {ward.FullName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -213,7 +282,7 @@ const Payment = observer(() => {
                                                 purchase_units: [{
                                                     amount: {
                                                         currency_code: "USD",
-                                                        value: "10.00"
+                                                        value: `${Math.round(((orderStore?.cart[0]?.totalPrice || 0) / 24000) * 100) / 100}`
                                                     }
                                                 }]
                                             })
@@ -239,16 +308,35 @@ const Payment = observer(() => {
                     <h2 className="text-lg font-semibold mb-4">Danh sách sản phẩm</h2>
                     <ul className="space-y-4">
                         {/* Map qua các sách đang mua */}
-                        <ListBooks books={detailOrderStore?.detailOrders?.map((detailCart) => {
-                            const book: IBook = { id: detailCart.bookId.id, image: detailCart.bookId.imageURL, title: detailCart.bookId.title, salePrice: detailCart.bookId.salePrice };
-                            return book;
-                        }) || [] as IBook[]} />
+                        {detailOrderStore &&
+                            detailOrderStore.detailCarts.map((item, index) => (
+                                <div key={index} className="flex items-center mb-4">
+                                    {/* Cột hình ảnh, chiếm khoảng 1/6 */}
+                                    <div className="flex-[1]">
+                                        <img
+                                            src={item.bookId.imageURL}
+                                            alt={item.bookId.title}
+                                            className="w-16 h-16 object-cover"
+                                        />
+                                    </div>
+
+                                    {/* Cột tiêu đề, chiếm khoảng 4/6 */}
+                                    <div className="flex-[4]">
+                                        <h4 className="font-semibold">{item.bookId.title}</h4>
+                                    </div>
+
+                                    {/* Cột giá, căn phải, chiếm khoảng 1/6 */}
+                                    <div className="flex-[1] text-right">
+                                        <p>{item.price.toLocaleString()}đ</p>
+                                    </div>
+                                </div>
+                            ))}
                     </ul>
 
                     <hr className="my-4" />
                     <div className="flex justify-between">
                         <span>Tạm tính</span>
-                        <span>{orderStore?.orders[0]?.totalPrice}đ</span>
+                        <span>{orderStore?.cart[0]?.totalPrice.toLocaleString() || 0}đ</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Phí vận chuyển</span>
@@ -257,7 +345,7 @@ const Payment = observer(() => {
                     <hr className="my-4" />
                     <div className="flex justify-between font-semibold">
                         <span>Tổng cộng</span>
-                        <span>{orderStore?.orders[0]?.totalPrice}đ</span>
+                        <span>{orderStore?.cart[0]?.totalPrice.toLocaleString() || 0}đ</span>
                     </div>
                 </div>
                 <Modal

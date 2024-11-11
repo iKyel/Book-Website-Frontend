@@ -1,4 +1,5 @@
 import { IDetailOrder } from '@/stores/detailOderStore';
+import convertDate from '@/utils/convertDate';
 import React from 'react';
 
 type OrderDetailProps = {
@@ -20,7 +21,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, orderDate, paymentTy
             {/* Tiêu đề */}
             <div className='flex justify-between items-center'>
                 <h1 className="text-2xl font-bold text-center mb-6 ml-4">ĐƠN HÀNG {orderId}</h1>
-                <p className="text-center mb-8">ĐẶT LÚC: {orderDate}</p>
+                <p className="text-center mb-8">ĐẶT LÚC: {convertDate(orderDate)}</p>
             </div>
 
             {/* Thông tin khách hàng */}
@@ -46,9 +47,9 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, orderDate, paymentTy
                         {products.map((product) => (
                             <tr key={product.id} className="border-b hover:bg-gray-50">
                                 <td className="py-3 px-4">{product.bookId.title}</td>
-                                <td className="py-3 px-4">{product.bookId.salePrice}</td>
+                                <td className="py-3 px-4">{product.bookId.salePrice.toLocaleString()}</td>
                                 <td className="py-3 px-4">{product.quantity}</td>
-                                <td className="py-3 px-4">{product.price}</td>
+                                <td className="py-3 px-4">{product.price.toLocaleString()}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -57,9 +58,9 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId, orderDate, paymentTy
 
             {/* Tổng tiền */}
             <div className="text-right">
-                <p className="text-lg"><strong>Giá sản phẩm:</strong> {productTotal}</p>
-                <p className="text-lg"><strong>Phí vận chuyển:</strong> {shippingFee}</p>
-                <p className="text-xl font-bold"><strong>Tổng tiền:</strong> {grandTotal}</p>
+                <p className="text-lg"><strong>Giá sản phẩm:</strong> {productTotal.toLocaleString()}đ</p>
+                <p className="text-lg"><strong>Phí vận chuyển:</strong> {shippingFee.toLocaleString()}đ</p>
+                <p className="text-xl font-bold"><strong>Tổng tiền:</strong> {grandTotal.toLocaleString()}đ</p>
             </div>
         </div>
     );

@@ -13,8 +13,8 @@ const Cart = observer(() => {
   const orderStore = useOrder();
   const router = useRouter();
 
-  const originalItems = JSON.parse(JSON.stringify(detailOrderStore?.detailOrders)) || [] as IDetailOrder[];
-  const [items, setItems] = useState<IDetailOrder[]>(detailOrderStore?.detailOrders || []);
+  const originalItems = JSON.parse(JSON.stringify(detailOrderStore?.detailCarts)) || [] as IDetailOrder[];
+  const [items, setItems] = useState<IDetailOrder[]>(detailOrderStore?.detailCarts || []);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isPayment, setIsPayment] = useState(true);
@@ -28,7 +28,10 @@ const Cart = observer(() => {
       const result = await detailOrderStore?.getDetailCart();
       if (result) {
         setItems(result);
-        if (orderStore) setTotalPrice(orderStore.orders.map((order) => order.orderStatus === 'Cart' ? order.totalPrice : 0)[0]);
+        if (orderStore) {
+          const order_totalPrice = orderStore.cart.map((order) => order.orderStatus === 'Cart' ? order.totalPrice : 0)
+          setTotalPrice(order_totalPrice[0]);
+        }
       }
     };
 
@@ -69,12 +72,15 @@ const Cart = observer(() => {
     const updated_list = items.filter((item, index) => item.quantity !== originalItems[index].quantity);
     // console.log(updated_list);
     const result = await detailOrderStore?.putDetailCart(updated_list, totalPrice);
-    // console.log(result, "result update"); 
-    if (result) {
-      setIsUpdated(false);
-      setIsPayment(true);
+    console.log(result, "result update");
+    if (result && result.message) {
+      setModalMessage(result.message);
+      setIsModalOpen(true);
+      if (result.message === 'Cập nhật sách trong giỏ hàng thành công!') {
+        setIsUpdated(false);
+        setIsPayment(true);
+      }
     }
-
   };
 
   //handleDelete
@@ -92,7 +98,7 @@ const Cart = observer(() => {
 
   //handlePayment
   const handlePayment = async () => {
-    const result = await orderStore?.checkQuantityBook(orderStore.orders[0].id);
+    const result = await orderStore?.checkQuantityBook(orderStore.cart[0].id);
     if (result) {
       if (result.message === 'Cho phép thanh toán!') {
         router.push('/payment');
@@ -139,7 +145,7 @@ const Cart = observer(() => {
           </div>
 
           {/* Giá tiền */}
-          <span className='mx-auto'>{item.bookId?.salePrice * item.quantity} đ</span>
+          <span className='mx-auto'>{(item.bookId?.salePrice * item.quantity).toLocaleString()} đ</span>
 
           {/* Nút xóa */}
           <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:underline mx-auto">
@@ -153,7 +159,7 @@ const Cart = observer(() => {
       {/* Tổng giá */}
       <div className="flex justify-end items-center mt-4 font-semibold">
         <span>Tổng giá:</span>
-        <span className='w-40 text-right'>{totalPrice} đ</span>
+        <span className='w-40 text-right'>{totalPrice.toLocaleString()} đ</span>
       </div>
 
       {/* Nút hành động */}

@@ -46,6 +46,7 @@ const convert = (detailOrder: any) => {
 
 class DetailOrderStore {
     detailOrders: IDetailOrder[] = [];
+    detailCarts: IDetailOrder[] = [];
 
     constructor() {
         makeAutoObservable(this);
@@ -73,13 +74,15 @@ class DetailOrderStore {
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
-                    runInAction(() => {
-                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
-                    })
-                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                    if (response.data && response.data.orderDetails) {
+                        runInAction(() => {
+                            this.detailCarts = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                        })
+                        return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                    }
+                    else return null;
                 }
             }
-            else return null;
         } catch (error) {
             console.error("Lỗi xem số lượng danh sách sách trong giỏ hàng", error);
             if (axios.isAxiosError(error) && typeof error.response?.data === 'object') {
@@ -95,7 +98,7 @@ class DetailOrderStore {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
                     runInAction(() => {
-                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                        this.detailCarts = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
                     return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                 }
@@ -112,17 +115,19 @@ class DetailOrderStore {
     async putDetailCart(updated_list: any[], totalPrice: number) {
         try {
             const updatedOrderDetails = updated_list.map((item) => { const { id, __v, ...productWithoutId } = item; return { ...productWithoutId, bookId: item.bookId.id } });
-            // console.log(updatedOrderDetails, "detailOrder_list");
+            console.log(updatedOrderDetails, "detailOrder_list");
             const response = await api.put('/order/updateCart', { updatedOrderDetails, totalPrice });
             // const response = await api.put('/api/updateCart', { updatedOrderDetails, totalPrice });
+            // console.log("response putdetailCart", response.data);
             if (response.data) {
                 const result = await orderStore.getCart(response.data.order);
                 if (result) {
                     runInAction(() => {
-                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                        this.detailCarts = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
-
-                    return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                    return {
+                        message: response.data.message, detailOrders: response.data.orderDetails.map((detailCart: any) => convert(detailCart))
+                    }
                 }
             }
         } catch (error) {
@@ -142,7 +147,7 @@ class DetailOrderStore {
                 // console.log(response.data, 'deleteCart');
                 if (result) {
                     runInAction(() => {
-                        this.detailOrders = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
+                        this.detailCarts = response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                     })
                     return response.data.orderDetails.map((detailCart: any) => convert(detailCart));
                 }

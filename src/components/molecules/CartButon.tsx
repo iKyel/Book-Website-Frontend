@@ -16,13 +16,13 @@ const CartButton = observer(() => {
             }
         }
         fetchData();
-    })
+    }, []);
     return (
         <div>
             <span className="ml-2">Giỏ hàng</span>
             {userStore && userStore.user && isClient
                 ?
-                (<span className="ml-1 text-sm"><span className="font-bold">({detailOrderStore?.detailOrders.length}</span> sản phẩm)</span>)
+                (<span className="ml-1 text-sm"><span className="font-bold">({detailOrderStore?.detailCarts.length}</span> sản phẩm)</span>)
                 :
                 (<span></span>)
             }

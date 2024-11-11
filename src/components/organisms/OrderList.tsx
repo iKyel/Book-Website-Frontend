@@ -1,4 +1,5 @@
 import { IOrder } from '@/stores/orderStore';
+import convertDate from '@/utils/convertDate';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
@@ -28,10 +29,10 @@ const OrderList = ({ orders }: { orders: IOrder[] }) => {
                             <tr className="border-b hover:bg-gray-50" key={index} onClick={() => handleClickList(index)}>
 
                                 <td className="py-3 px-4">{order.id}</td>
-                                <td className="py-3 px-4">{order.createAt}</td>
+                                <td className="py-3 px-4">{convertDate(order.updatedAt || '')}</td>
                                 <td className="py-3 px-4">{order.orderStatus}</td>
                                 <td className="py-3 px-4">{order.deliveryBrand}</td>
-                                <td className="py-3 px-4">{order.totalPrice}</td>
+                                <td className="py-3 px-4">{order.totalPrice.toLocaleString()}</td>
                             </tr>
                         ))}
                     </tbody>
