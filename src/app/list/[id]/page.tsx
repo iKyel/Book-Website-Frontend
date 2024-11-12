@@ -27,7 +27,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
     useEffect(() => {
         const fetchData = async () => {
             const res_detailbook = await detailBookStore?.getDetailBook(id);
-            // console.log(res_detailbook);
+            console.log(res_detailbook);
             if (res_detailbook) {
                 if (res_detailbook.detailBook) {
                     setDetailBook(res_detailbook.detailBook);
@@ -50,7 +50,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
     const handleAddCart = async () => {
         if (detailBook.quantity >= numOfBooks) {
             const result = await detailOrderStore?.postDetailCart(detailBook.id, detailBook.salePrice * numOfBooks, numOfBooks, detailBook.quantity);
-            if (result) {
+            if (result && result.message !== 'Token chưa có: Người dùng chưa đăng nhập!') {
                 setModalMessage(result.message);
                 setIsModalOpen(true);
             }
@@ -61,6 +61,13 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
             setNumOfBooks(detailBook.quantity);
         }
     }
+
+    //handleQuantityChange
+    const handleQuantityChange = (newQuantity: number) => {
+        if (!Number.isNaN(newQuantity) && newQuantity <= 999) {
+            setNumOfBooks(newQuantity);
+        }
+    };
 
     //handleModal
     const handleModal = async () => {
@@ -76,7 +83,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                 <div className="w-1/3">
                     <img src={detailBook.image} alt={detailBook.title} className="w-80 h-96" />
                     <p className={`mt-2 text-center ${detailBook.quantity ? 'text-green-600' : 'text-red-600'}`}>
-                        {detailBook.quantity ? 'Còn hàng' : 'Hết hàng'}
+                        {detailBook.quantity ? 'CÒN HÀNG' : 'HẾT HÀNG'}
                     </p>
                 </div>
 
@@ -97,13 +104,16 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                         <button className="px-4 py-2 bg-gray-400 rounded-s-lg" onClick={minusNumOfBooks}>-</button>
                         <input
                             type="text"
-                            className="mx-0.5 px-4 py-2 bg-gray-300 text-center w-12"
+                            className="mx-0.5 px-4 py-2 bg-gray-300 text-center w-16"
                             value={numOfBooks}
-                            onChange={(e) => setNumOfBooks(parseInt(e.target.value) | 1)}
+                            onChange={(e) => handleQuantityChange(parseInt(e.target.value))}
                             min="1"
                         />
                         <button className="px-4 py-2 bg-gray-400 rounded-e-lg" onClick={plusNumOfBooks}>+</button>
-                        <button className="ml-4 px-6 py-2 bg-blue-600 text-white" onClick={handleAddCart}>
+                        <button className={`ml-4 px-6 py-2 bg-blue-600 text-white ${detailBook.quantity === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"}`}
+                            onClick={handleAddCart}
+                            disabled={detailBook.quantity === 0}
+                        >
                             Thêm vào giỏ
                         </button>
                     </div>

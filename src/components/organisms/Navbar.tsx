@@ -7,7 +7,7 @@ import CartButton from "../molecules/CartButon";
 
 const Navbar = () => {
   return (
-    <header className="bg-orange-600 text-white">
+    <div className="bg-orange-600 text-white">
       {/* Top Section */}
       <div className="container mx-auto flex justify-between items-center py-2">
         <div className="text-sm font-bold">
@@ -19,6 +19,7 @@ const Navbar = () => {
       {/* Bottom Section */}
       <div className="bg-white text-black py-4">
         <div className="container mx-auto flex justify-between items-center">
+
           {/* Logo Section */}
           <Link href="/" className="hover:underline">
             <div className="flex items-center">
@@ -34,6 +35,7 @@ const Navbar = () => {
           </Link>
 
           {/* Search Bar */}
+
           <SearchBar />
 
           {/* Cart Section */}
@@ -73,7 +75,7 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
-    </header>
+    </div>
   );
 };
 
