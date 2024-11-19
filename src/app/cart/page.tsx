@@ -70,9 +70,10 @@ const Cart = observer(() => {
   //handleUpdate
   const handleUpdate = async () => {
     const updated_list = items.filter((item, index) => item.quantity !== originalItems[index].quantity);
-    // console.log(updated_list);
-    const result = await detailOrderStore?.putDetailCart(updated_list, totalPrice);
-    console.log(result, "result update");
+    // console.log(totalPrice, "totalPrice");
+
+    const result = await detailOrderStore?.putDetailCart(updated_list);
+    // console.log(result, "result update");
     if (result && result.message) {
       setModalMessage(result.message);
       setIsModalOpen(true);

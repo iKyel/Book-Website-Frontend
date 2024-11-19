@@ -112,11 +112,11 @@ class DetailOrderStore {
         }
     }
 
-    async putDetailCart(updated_list: any[], totalPrice: number) {
+    async putDetailCart(updated_list: any[]) {
         try {
-            const updatedOrderDetails = updated_list.map((item) => { const { id, __v, ...productWithoutId } = item; return { ...productWithoutId, bookId: item.bookId.id } });
+            const updatedOrderDetails = updated_list.map((item) => { const { id, __v, ...productWithoutId } = item; return { ...productWithoutId, bookId: item.bookId.id, price: item.bookId.salePrice * item.quantity } });
             console.log(updatedOrderDetails, "detailOrder_list");
-            const response = await api.put('/order/updateCart', { updatedOrderDetails, totalPrice });
+            const response = await api.put('/order/updateCart', { updatedOrderDetails });
             // const response = await api.put('/api/updateCart', { updatedOrderDetails, totalPrice });
             // console.log("response putdetailCart", response.data);
             if (response.data) {
