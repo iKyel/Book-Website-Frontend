@@ -24,6 +24,7 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
     const [sortOption, setSortOption] = useState('newest');
     const [currentPage, setCurrentPage] = useState(1);
     const [books, setBooks] = useState([] as IBook[]);
+    const [totalBook, setTotalBook] = useState(1);
     const [author, setAuthor] = useState({} as IAuthor);
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -45,6 +46,7 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
                 if (result.listBooks) { setBooks(result.listBooks); }
                 else { setBooks([]) }
                 if (result.author) { setAuthor(result.author); }
+                if (result.totalBook) setTotalBook(result.totalBook);
             }
         }
         fetchData();
@@ -61,17 +63,20 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
             setSelectedCategories((prev: string[]) => {
                 return prev.includes(category) ? prev.filter((item: string) => item !== category) : [...prev, category]
             });
+            handlePageChange(1);
         }
     };
 
     //handlePriceChange
     const handlePriceChange = (price: { min: number, max: number }) => {
         setSelectedPrice({ min: price.min, max: price.max });
+        handlePageChange(1);
     };
 
     //handleSortTypeChange
     const handleSortTypeChange = (sortType: string) => {
         setSortOption(sortType);
+        handlePageChange(1);
     };
 
     //handlePageChange
@@ -167,7 +172,7 @@ const AuthorDetail: React.FC<AuthorDetailProp> = ({ params }) => {
 
                 {/* Phân trang */}
                 <div className="flex justify-center mt-8">
-                    <Pagination setPagination={handlePageChange} books={books ? books : []} />
+                    <Pagination setPagination={handlePageChange} totalBook={totalBook} />
                 </div>
             </div>
         </div>

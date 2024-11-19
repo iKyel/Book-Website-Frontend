@@ -5,14 +5,13 @@ import { IBook } from '@/stores/bookStore';
 
 interface ChildComponentProps {
     setPagination: (data: number) => void;
-    books: IBook[];
+    totalBook: number;
 }
 
-const Pagination = observer(({ setPagination, books }: ChildComponentProps) => {
-    const totalBooks = books ? books.length : 0;
+const Pagination = observer(({ setPagination, totalBook }: ChildComponentProps) => {
+    const totalBooks = totalBook;
     const booksPerPage = 16;
     const totalPages = Math.ceil(totalBooks / booksPerPage);
-    // const totalPages = 16;
     const [currentPage, setCurrentPage] = useState(1);
 
     const handlePageChange = (page: number) => {

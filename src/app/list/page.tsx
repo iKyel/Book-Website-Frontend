@@ -17,6 +17,7 @@ const ListPage = observer(() => {
   const [sortOption, setSortOption] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState([] as IBook[]);
+  const [totalBook, setTotalBook] = useState(1);
 
   const salePrice = [
     { id: 'price1', min: 0, max: Number.MAX_SAFE_INTEGER, name: 'Tất cả' },
@@ -35,9 +36,12 @@ const ListPage = observer(() => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result: IBook[] = await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
+      const result = await bookStore?.getFilterandArrangeBooks(selectedCategories, selectedPrice, sortOption, currentPage);
       if (categoryStore?.categories) { setCategories(categoryStore?.categories); }
-      if (result) { setBooks(result); }
+      if (result) {
+        if (result.listBooks) setBooks(result.listBooks);
+        if (result.totalBook) setTotalBook(result.totalBook);
+      }
     }
 
     fetchData();
@@ -49,17 +53,20 @@ const ListPage = observer(() => {
       setSelectedCategories((prev: string[]) => {
         return prev.includes(category) ? prev.filter((item: string) => item !== category) : [...prev, category]
       });
+      handlePageChange(1);
     }
   };
 
   //handlePriceChange
   const handlePriceChange = (price: { min: number, max: number }) => {
     setSelectedPrice({ min: price.min, max: price.max });
+    handlePageChange(1);
   };
 
   //handleSortTypeChange
   const handleSortTypeChange = (sortType: string) => {
     setSortOption(sortType);
+    handlePageChange(1);
   };
 
   //handlePageChange
@@ -139,7 +146,7 @@ const ListPage = observer(() => {
 
         {/* Phân trang */}
         <div className="flex justify-center mt-8">
-          <Pagination setPagination={handlePageChange} books={bookStore?.books ? bookStore.books : []} />
+          <Pagination setPagination={handlePageChange} totalBook={totalBook} />
         </div>
       </div>
     </div>

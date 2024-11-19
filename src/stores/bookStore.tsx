@@ -48,7 +48,7 @@ class BookStore {
                     runInAction(() => {
                         this.books = response.data.listBooks.map((book: any) => convert(book));
                     });
-                    return response.data.listBooks.map((book: any) => convert(book));
+                    return { listBooks: response.data.listBooks.map((book: any) => convert(book)), totalBook: response.data.totalBook };
                 }
             }
             return null;
@@ -67,7 +67,7 @@ class BookStore {
             // const response = await axiosInstance.get('/api/getBooksByName', { params: { searchName, currentPage } })
             if (response) {
                 if (response.data.listBooks) {
-                    return response.data.listBooks.map((book: any) => convert(book));
+                    return { listBooks: response.data.listBooks.map((book: any) => convert(book)), totalBook: response.data.totalBook };
                 }
             }
             return null;

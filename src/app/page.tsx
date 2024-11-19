@@ -6,6 +6,7 @@ import { useBook } from '@/contexts/AppContext';
 import { IBook } from '@/stores/bookStore';
 import { useRouter } from 'next/navigation';
 import ListBooks from '@/components/organisms/ListBooks';
+import Banner from '@/components/organisms/Banner';
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState('newest');
@@ -17,9 +18,11 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const result = await bookStore?.getFilterandArrangeBooks([], { min: 0, max: Number.MAX_SAFE_INTEGER }, selectedTab, 1);
-      const allBooks: IBook[] = Array.isArray(result) ? result : [];
-      // console.log(allBooks, "allBooks");
-      if (allBooks) setBooks(allBooks.slice(0, 6));
+      if (result.listBooks) {
+        const allBooks: IBook[] = Array.isArray(result.listBooks) ? result.listBooks : [];
+        // console.log(allBooks, "allBooks");
+        if (allBooks) setBooks(allBooks.slice(0, 6));
+      }
     }
     fetchData();
   }, [selectedTab]);
@@ -32,9 +35,7 @@ const HomePage = () => {
   return (
     <div className="w-full">
       {/* Banner */}
-      <div className="w-full h-76 bg-gray-300 mb-8">
-        <h2 className="text-center text-3xl font-bold py-32">Banner</h2>
-      </div>
+      <Banner />
 
       {/* Nav */}
       <div className="flex justify-center mb-8">
@@ -57,7 +58,7 @@ const HomePage = () => {
 
       {/* Danh sách sách */}
       <div className='mx-60'>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 px-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 px-12 mb-8">
           <ListBooks books={books} />
         </div>
 
