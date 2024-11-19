@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import axiosInstance from '@/utils/axiosInstance';
 import api from '@/utils/catchErrorToken';
 import axios from 'axios';
+import { detailOrderStore } from './detailOderStore';
 
 export interface IUser { id: string; userName: string; fullName: string };
 
@@ -70,7 +71,7 @@ class UserStore {
         try {
             const response = await axiosInstance.post('/auth/login', { userName, password });
             // const response = await axiosInstance.post('/api/login', { userName, password });
-            console.log(response.data);
+            // console.log(response.data);
             if (response) {
                 if (response.data.message === "Đăng nhập thành công!") {
                     const user = response.data.userData;
@@ -78,6 +79,7 @@ class UserStore {
                         this.user = convert(user);
                     })
                 }
+                detailOrderStore.getDetailCartLength();
                 return response.data;
             }
 

@@ -81,7 +81,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
             <div className="flex mb-8">
                 {/* Hình ảnh và trạng thái */}
                 <div className="w-1/3">
-                    <img src={detailBook.image} alt={detailBook.title} className="w-80 h-96" />
+                    <img src={detailBook.image} alt={detailBook.title} className="w-80 h-96 shadow-2xl border-2 border-slate-500" />
                     <p className={`mt-2 text-center ${detailBook.quantity ? 'text-green-600' : 'text-red-600'}`}>
                         {detailBook.quantity ? 'CÒN HÀNG' : 'HẾT HÀNG'}
                     </p>
@@ -90,8 +90,29 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
                 {/* Thông tin sách */}
                 <div className="w-2/3 ml-8">
                     <h1 className="text-2xl font-bold mb-4">{detailBook.title}</h1>
-                    <p className="text-xl text-gray-700 mb-2">{detailBook.salePrice} VND</p>
-                    <p className="mb-2">Tác giả: {detailBook.authors && detailBook.authors.map((author, index) => (<Link href={`/detailAuthor/${author.id}`} key={index}><span className="hover:underline">{author.authorName};</span></Link>))}</p>
+                    <p className="text-xl text-gray-700 mb-2">{detailBook?.salePrice?.toLocaleString()} VND</p>
+                    <p className="mb-2">Tác giả:
+                        {detailBook.authors &&
+                            detailBook.authors.map((author, index) => {
+                                if (index !== detailBook.authors.length - 1) {
+                                    return (
+                                        <Link href={`/detailAuthor/${author.id}`} key={index}>
+                                            <span className="hover:underline text-blue-500">
+                                                {` ${author.authorName}; `}
+                                            </span>
+                                        </Link>)
+                                }
+                                else {
+                                    return (
+                                        <Link href={`/detailAuthor/${author.id}`} key={index}>
+                                            <span className="hover:underline text-blue-500">
+                                                {author.authorName}
+                                            </span>
+                                        </Link>)
+                                }
+                            }
+                            )}
+                    </p>
                     <p className="mb-2">Năm xuất bản: {detailBook.publishedYear}</p>
                     <p className="mb-2">Kích thước: {detailBook.size}</p>
                     <p className="mb-2">Nhà xuất bản: {detailBook.publisher}</p>
