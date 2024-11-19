@@ -18,7 +18,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const result = await bookStore?.getFilterandArrangeBooks([], { min: 0, max: Number.MAX_SAFE_INTEGER }, selectedTab, 1);
-      if (result.listBooks) {
+      if (result && result.listBooks) {
         const allBooks: IBook[] = Array.isArray(result.listBooks) ? result.listBooks : [];
         // console.log(allBooks, "allBooks");
         if (allBooks) setBooks(allBooks.slice(0, 6));
