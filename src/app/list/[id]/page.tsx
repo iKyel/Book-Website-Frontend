@@ -160,7 +160,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ params }) => {
             <div className="text-center mx-auto border-t-2 mb-8 p-8">
                 <h2 className="text-xl font-bold mb-4">SẢN PHẨM LIÊN QUAN</h2>
                 <div className="grid grid-cols-3 gap-4 mb-8">
-                    <ListBooks books={relatedBooks} />
+                    <ListBooks books={relatedBooks.filter((book) => book.id !== id).slice(0, 3)} />
                 </div>
             </div>
             <Modal

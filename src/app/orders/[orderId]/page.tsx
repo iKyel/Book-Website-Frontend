@@ -30,7 +30,6 @@ const OrderList: React.FC<OrderDetailProps> = ({ params }) => {
                 const result_list = await detailOrderStore?.getDetailOrders(orderId);
                 // console.log("result_list", result_list);
                 if (result_list && result_list.order && result_list.detailOrders) {
-
                     setOrder(result_list.order);
                     setDetailOrders(result_list.detailOrders);
                 }

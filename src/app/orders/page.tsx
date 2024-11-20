@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { IOrder, orderStore } from '@/stores/orderStore';
+import { orderStore } from '@/stores/orderStore';
 import OrderList from '@/components/organisms/OrderList';
 import Container from '@/components/organisms/Container';
 import Sidebar from '@/components/organisms/Sidebar';
