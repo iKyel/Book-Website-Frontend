@@ -146,7 +146,7 @@ const Cart = observer(() => {
           </div>
 
           {/* Giá tiền */}
-          <span className='mx-auto'>{(item.bookId?.salePrice * item.quantity).toLocaleString()} đ</span>
+          <span className='mx-auto'>{(item.bookId?.salePrice * item.quantity)?.toLocaleString()} đ</span>
 
           {/* Nút xóa */}
           <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:underline mx-auto">
@@ -160,7 +160,7 @@ const Cart = observer(() => {
       {/* Tổng giá */}
       <div className="flex justify-end items-center mt-4 font-semibold">
         <span>Tổng giá:</span>
-        <span className='w-40 text-right'>{totalPrice.toLocaleString()} đ</span>
+        <span className='w-40 text-right'>{totalPrice?.toLocaleString()} đ</span>
       </div>
 
       {/* Nút hành động */}

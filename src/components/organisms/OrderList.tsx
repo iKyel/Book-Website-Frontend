@@ -26,7 +26,7 @@ const OrderList = ({ orders }: { orders: IOrder[] }) => {
                     </thead>
                     <tbody>
                         {orders.map((order, index) => (
-                            <tr className="border-b hover:bg-gray-50" key={index} onClick={() => handleClickList(index)}>
+                            <tr className="border-b hover:bg-gray-50 cursor-pointer" key={index} onClick={() => handleClickList(index)}>
 
                                 <td className="py-3 px-4">{order.id}</td>
                                 <td className="py-3 px-4">{convertDate(order.updatedAt || '')}</td>

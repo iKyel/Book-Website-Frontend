@@ -13,7 +13,7 @@ const HomePage = () => {
   const [books, setBooks] = useState([] as IBook[]);
   const bookStore = useBook()!;
   const router = useRouter();
-  const [sort, setSort] = useState('newest');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,11 +26,6 @@ const HomePage = () => {
     }
     fetchData();
   }, [selectedTab]);
-
-  const handleWatchMore = () => {
-    setSort(selectedTab);
-    router.push('/list');
-  }
 
   return (
     <div className="w-full">
