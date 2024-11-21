@@ -176,7 +176,7 @@ const Cart = observer(() => {
           </button>
           <button
             onClick={handlePayment}
-            className={`px-4 py-2 rounded ${isPayment ? 'bg-green-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            className={`px-4 py-2 rounded ${isPayment && items.length > 0 ? 'bg-green-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             disabled={!isPayment}
           >
             Thanh toán
