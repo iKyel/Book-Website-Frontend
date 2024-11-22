@@ -4,7 +4,7 @@ const images = [
     "https://bizweb.dktcdn.net/100/330/208/files/hinh-nen-7-vien-ngoc-rong-21.jpg?v=1655530366216",
     "https://images2.alphacoders.com/125/1255552.jpg",
     'https://file.vfo.vn/hinh/2014/5/anh-bia-one-piece-12.jpg',
-    'https://file.hstatic.net/200000462939/article/319552970_1283473812215809_8451918105833455952_n_a885482dad53456d935ad2be8b2ff665.jpg'
+    'https://cdn.sforum.vn/sforum/wp-content/uploads/2022/05/20-4.jpg'
 ];
 
 const Banner = () => {
